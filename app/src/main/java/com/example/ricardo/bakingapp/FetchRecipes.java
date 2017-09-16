@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,8 @@ public class FetchRecipes extends AsyncTask<Void, Void, String> {
     private Context mContext;
     private OnTaskCompleted mCallback;
     private String mUrl;
+
+    private static final String TAG = "FetchRecipes";
 
     public interface OnTaskCompleted {
         void onTaskCompleted(ArrayList<String> names);
@@ -95,10 +98,10 @@ public class FetchRecipes extends AsyncTask<Void, Void, String> {
             JSONArray recipes = new JSONArray(jsonData);
 
             for (int i = 0; i < recipes.length(); i++) {
-                JSONObject object = recipes.getJSONObject(0);
+                JSONObject object = recipes.getJSONObject(i);
                 names.add(object.getString("name"));
+                Log.i(TAG, "fetchFromJson: " + object.getString("name"));
             }
-
             mCallback.onTaskCompleted(names);
 
         } catch (JSONException e) {
@@ -112,5 +115,4 @@ public class FetchRecipes extends AsyncTask<Void, Void, String> {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
-
 }
