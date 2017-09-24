@@ -15,7 +15,8 @@ import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements RecipesAdapter.ListItemClickListener, FetchRecipesData.OnTaskCompleted {
+public class MainActivity extends AppCompatActivity implements RecipesAdapter.ListItemClickListener,
+        FetchRecipesData.OnTaskCompleted {
 
     private RecipesAdapter mAdapter;
 
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Li
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Recipes ArrayList
         ArrayList<Recipe> recipes = new ArrayList<>();
         mAdapter = new RecipesAdapter(recipes, this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recipes_list_rv);
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Li
 
     @Override
     public void onListItemClickListener(Recipe selectedRecipe) {
+        // Create and intent for the StepsActivity and send the selected recipe as an extra
         Intent intent = new Intent(this, StepsActivity.class);
         intent.putExtra("recipe", selectedRecipe);
         startActivity(intent);

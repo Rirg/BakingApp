@@ -1,14 +1,15 @@
 package com.example.ricardo.bakingapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.adapters.StepsAdapter;
@@ -23,11 +24,10 @@ import java.util.ArrayList;
  * Created by Ricardo on 9/16/17.
  */
 
-public class StepsListFragment extends Fragment implements FetchRecipesData.OnTaskCompleted, StepsAdapter.ListItemClickListener {
+public class StepsListFragment extends Fragment implements FetchRecipesData.OnTaskCompleted, StepsAdapter.ListItemClickListener, View.OnClickListener {
 
     private static final String TAG = "StepsListFragment";
 
-    private Recipe mRecipe;
     private StepsAdapter mAdapter;
 
     public StepsListFragment() {
@@ -39,17 +39,18 @@ public class StepsListFragment extends Fragment implements FetchRecipesData.OnTa
 
         View rootView = inflater.inflate(R.layout.fragment_steps_list, container, false);
 
-        mRecipe = getArguments().getParcelable("recipe");
+        TextView ingredientsTv = rootView.findViewById(R.id.recipe_ingredients_tv);
+        ingredientsTv.setOnClickListener(this);
 
-        Log.i(TAG, "onCreateView: " + mRecipe.getName());
+        int id = getArguments().getInt("id");
+
 
         mAdapter = new StepsAdapter(new ArrayList<Step>(), this);
         RecyclerView rv = rootView.findViewById(R.id.steps_list_rv);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(mAdapter);
 
-        Log.i(TAG, "onCreateView: " + mRecipe.getId());
-        new FetchRecipesData(getContext(), this, FetchRecipesData.STEPS_CODE, mRecipe.getId()).execute();
+        new FetchRecipesData(getContext(), this, FetchRecipesData.STEPS_CODE, id).execute();
 
         return rootView;
     }
@@ -63,6 +64,13 @@ public class StepsListFragment extends Fragment implements FetchRecipesData.OnTa
 
     @Override
     public void onListItemClickListener(int pos) {
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        Intent intent = new Intent();
+        // TODO launch an intent for the ingredients
 
     }
 }

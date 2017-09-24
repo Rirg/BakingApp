@@ -10,7 +10,7 @@ import com.example.ricardo.bakingapp.pojos.Recipe;
 
 public class StepsActivity extends AppCompatActivity {
 
-    Recipe mCurrentRecipe;
+    private Recipe mCurrentRecipe;
 
     private static final String TAG = "StepsActivity";
 
@@ -26,7 +26,7 @@ public class StepsActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: " + mCurrentRecipe.getName());
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable("recipe", mCurrentRecipe);
+        bundle.putInt("id", mCurrentRecipe.getId());
 
         StepsListFragment fragment = new StepsListFragment();
         fragment.setArguments(bundle);
