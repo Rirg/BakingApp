@@ -1,6 +1,7 @@
 package com.example.ricardo.bakingapp.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
  */
 
 public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> {
+
+    private static final String TAG = "StepsAdapter";
 
     private ArrayList<Step> mSteps;
     private ListItemClickListener mListener;
@@ -44,6 +47,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
+        if (mSteps == null) return 0;
         return mSteps.size();
     }
 
@@ -56,6 +60,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
             super(itemView);
 
             shortDescriptionTv = itemView.findViewById(R.id.step_short_description_tv);
+            itemView.setOnClickListener(this);
         }
 
         void bind(int pos) {
@@ -64,7 +69,8 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-
+            Log.i(TAG, "onClick: " + getAdapterPosition());
+            mListener.onListItemClickListener(getAdapterPosition());
         }
     }
 

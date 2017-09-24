@@ -1,16 +1,22 @@
 package com.example.ricardo.bakingapp.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.ricardo.bakingapp.R;
+import com.example.ricardo.bakingapp.pojos.Step;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -24,6 +30,8 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.ArrayList;
+
 
 public class StepDetailFragment extends Fragment {
 
@@ -32,6 +40,8 @@ public class StepDetailFragment extends Fragment {
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
+    Step mCurrentStep;
+    ArrayList<Step> mSteps;
     private static final String TAG = "StepDetailFragment";
 
     @Nullable
@@ -41,12 +51,32 @@ public class StepDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
 
         mPlayerView = rootView.findViewById(R.id.detail_exo_player);
+        TextView descriptionTv = rootView.findViewById(R.id.step_description_tv);
+
+        if (mCurrentStep != null) {
+            descriptionTv.setText(mCurrentStep.getDescription());
+        }
+
+        Bundle extras = getArguments();
+        if (extras!= null && extras.getParcelableArrayList("steps") != null) {
+            mSteps = extras.getParcelableArrayList("steps");
+            mCurrentStep = mSteps.get(extras.getInt("pos"));
+            descriptionTv.setText(mCurrentStep.getDescription());
+        }
+
+        initializeMediaSession();
 
         return rootView;
     }
 
+
+    public void setCurrentStep(Step currentStep) {
+        mCurrentStep = currentStep;
+    }
+
     /**
      * Initialize ExoPlayer.
+     *
      * @param mediaUri The URI of the sample to play.
      */
     private void initializePlayer(Uri mediaUri) {
@@ -124,6 +154,20 @@ public class StepDetailFragment extends Fragment {
         @Override
         public void onSkipToPrevious() {
             mExoPlayer.seekTo(0);
+        }
+    }
+
+    /**
+     * Broadcast Receiver registered to receive the MEDIA_BUTTON intent coming from clients.
+     */
+    public static class MediaReceiver extends BroadcastReceiver {
+
+        public MediaReceiver() {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
 

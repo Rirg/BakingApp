@@ -3,6 +3,7 @@ package com.example.ricardo.bakingapp.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -27,10 +28,19 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Li
 
         // Recipes ArrayList
         ArrayList<Recipe> recipes = new ArrayList<>();
+        RecyclerView recyclerView;
         mAdapter = new RecipesAdapter(recipes, this);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recipes_list_rv);
+
+        // Check if is a tablet or cellphone
+        if (findViewById(R.id.recipes_grid_rv) != null) {
+            recyclerView = (RecyclerView) findViewById(R.id.recipes_grid_rv);
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        } else {
+            recyclerView = (RecyclerView) findViewById(R.id.recipes_list_rv);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        }
+
         recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
 
         new FetchRecipesData(this, this, FetchRecipesData.RECIPES_CODE, -1).execute();
