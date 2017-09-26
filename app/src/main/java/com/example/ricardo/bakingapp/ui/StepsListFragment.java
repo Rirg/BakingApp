@@ -29,7 +29,7 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
 
     private OnStepSelected mCallback;
 
-    public interface OnStepSelected{
+    interface OnStepSelected{
         void onStepSelected(int pos);
     }
 
@@ -59,30 +59,17 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
         TextView ingredientsTv = rootView.findViewById(R.id.recipe_ingredients_tv);
         ingredientsTv.setOnClickListener(this);
 
-     /*   ArrayList<Step> steps = getArguments().getParcelableArrayList("steps");
+        ArrayList<Step> steps = getArguments().getParcelableArrayList("steps");
 
         mAdapter = new StepsAdapter(steps, this);
 
         RecyclerView rv = rootView.findViewById(R.id.steps_list_rv);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(mAdapter);
-*/
+
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        ArrayList<Step> steps = getArguments().getParcelableArrayList("steps");
-
-        mAdapter = new StepsAdapter(steps, this);
-
-        RecyclerView rv = view.findViewById(R.id.steps_list_rv);
-        rv.setLayoutManager(new LinearLayoutManager(getContext()));
-        rv.setAdapter(mAdapter);
-
-    }
 
     @Override
     public void onListItemClickListener(int pos) {

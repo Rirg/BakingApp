@@ -3,6 +3,7 @@ package com.example.ricardo.bakingapp.ui;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,16 +46,22 @@ public class StepDetailFragment extends Fragment {
     ArrayList<Step> mSteps;
     private static final String TAG = "StepDetailFragment";
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // TODO make the video full screen just in landscape
+
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
+
 
         mPlayerView = rootView.findViewById(R.id.detail_exo_player);
         TextView descriptionTv = rootView.findViewById(R.id.step_description_tv);
 
-        if (mCurrentStep != null) {
+        if (savedInstanceState != null) mCurrentStep = savedInstanceState.getParcelable("step");
+
+        if (mCurrentStep != null && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             descriptionTv.setText(mCurrentStep.getDescription());
         }
 
@@ -61,12 +69,30 @@ public class StepDetailFragment extends Fragment {
         if (extras!= null && extras.getParcelableArrayList("steps") != null) {
             mSteps = extras.getParcelableArrayList("steps");
             mCurrentStep = mSteps.get(extras.getInt("pos"));
-            descriptionTv.setText(mCurrentStep.getDescription());
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                descriptionTv.setText(mCurrentStep.getDescription());
+            }
         }
 
         initializeMediaSession();
+        initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy: " + "se destruye el mediaplayer");
+        releasePlayer();
+        mMediaSession.setActive(false);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("step", mCurrentStep);
+        outState.putLong("playerPos", mExoPlayer.getCurrentPosition());
     }
 
 
