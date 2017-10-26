@@ -14,8 +14,8 @@ import java.util.ArrayList;
 
 public class StepDetailActivity extends AppCompatActivity {
 
-    int mPos;
-    ArrayList<Step> mSteps;
+    private int mPos;
+    private ArrayList<Step> mSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

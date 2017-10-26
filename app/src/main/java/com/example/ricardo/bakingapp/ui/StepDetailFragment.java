@@ -3,7 +3,6 @@ package com.example.ricardo.bakingapp.ui;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,8 +42,9 @@ public class StepDetailFragment extends Fragment {
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
-    Step mCurrentStep;
-    ArrayList<Step> mSteps;
+    private Step mCurrentStep;
+    private ArrayList<Step> mSteps;
+    long mPlayerPos = 0;
     private static final String TAG = "StepDetailFragment";
 
 
@@ -51,29 +52,39 @@ public class StepDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        // TODO make the video full screen just in landscape
-
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
 
 
         mPlayerView = rootView.findViewById(R.id.detail_exo_player);
         TextView descriptionTv = rootView.findViewById(R.id.step_description_tv);
 
-        if (savedInstanceState != null) mCurrentStep = savedInstanceState.getParcelable("step");
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
-        if (mCurrentStep != null && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            descriptionTv.setText(mCurrentStep.getDescription());
+        // Check if the savedInstanceState bundle isn't null
+        if (savedInstanceState != null) {
+            // Get the current step
+            mCurrentStep = savedInstanceState.getParcelable("step");
+            mPlayerPos = savedInstanceState.getLong("playerPos");
+            Log.i(TAG, "onCreateView: " + mPlayerPos);
         }
 
-        Bundle extras = getArguments();
-        if (extras!= null && extras.getParcelableArrayList("steps") != null) {
-            mSteps = extras.getParcelableArrayList("steps");
-            mCurrentStep = mSteps.get(extras.getInt("pos"));
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                descriptionTv.setText(mCurrentStep.getDescription());
+        // Get all the steps and the current step based on the position if the mCurrentStep variable
+        // is null
+        if (mCurrentStep == null) {
+            Bundle extras = getArguments();
+            if (extras != null && extras.getParcelableArrayList("steps") != null) {
+                mSteps = extras.getParcelableArrayList("steps");
+                mCurrentStep = mSteps.get(extras.getInt("pos"));
+
             }
         }
 
+        if (mCurrentStep != null && descriptionTv != null) {
+            descriptionTv.setText(mCurrentStep.getDescription());
+        }
+
+        // Initialize the Media Session and the Player
         initializeMediaSession();
         initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
 
@@ -112,8 +123,9 @@ public class StepDetailFragment extends Fragment {
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
             mPlayerView.setPlayer(mExoPlayer);
+
             // Prepare the MediaSource.
-            String userAgent = Util.getUserAgent(getContext(), "ClassicalMusicQuiz");
+            String userAgent = Util.getUserAgent(getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
