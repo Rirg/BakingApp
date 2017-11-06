@@ -1,4 +1,4 @@
-package com.example.ricardo.bakingapp.ui;
+package com.example.ricardo.bakingapp.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.example.ricardo.bakingapp.R;
+import com.example.ricardo.bakingapp.fragments.StepDetailFragment;
 import com.example.ricardo.bakingapp.pojos.Step;
 
 import java.util.ArrayList;

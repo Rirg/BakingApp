@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ingredients_rv"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/recipes_grid_rv"
     android:layout_width="match_parent"
+    tools:listitem="@layout/ingredients_list_item"
     android:layout_height="match_parent"
-    tools:context="com.example.ricardo.bakingapp.activities.MainActivity">
+    tools:context="com.example.ricardo.bakingapp.activities.IngredientsActivity">
 
 </android.support.v7.widget.RecyclerView>

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="10"
-    tools:context="com.example.ricardo.bakingapp.ui.StepDetailFragment">
+    tools:context="com.example.ricardo.bakingapp.fragments.StepDetailFragment">
 
     <FrameLayout
         android:layout_width="match_parent"

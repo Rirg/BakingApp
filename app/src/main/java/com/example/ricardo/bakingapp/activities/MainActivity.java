@@ -1,4 +1,4 @@
-package com.example.ricardo.bakingapp.ui;
+package com.example.ricardo.bakingapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,10 +33,10 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Li
 
         // Check if is a tablet or cellphone
         if (findViewById(R.id.recipes_grid_rv) != null) {
-            recyclerView = (RecyclerView) findViewById(R.id.recipes_grid_rv);
+            recyclerView =  findViewById(R.id.recipes_grid_rv);
             recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         } else {
-            recyclerView = (RecyclerView) findViewById(R.id.recipes_list_rv);
+            recyclerView = findViewById(R.id.recipes_list_rv);
             recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         }
 

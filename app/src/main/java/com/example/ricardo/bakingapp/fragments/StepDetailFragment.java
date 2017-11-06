@@ -1,4 +1,4 @@
-package com.example.ricardo.bakingapp.ui;
+package com.example.ricardo.bakingapp.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,12 +53,8 @@ public class StepDetailFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
 
-
         mPlayerView = rootView.findViewById(R.id.detail_exo_player);
         TextView descriptionTv = rootView.findViewById(R.id.step_description_tv);
-
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
         // Check if the savedInstanceState bundle isn't null
         if (savedInstanceState != null) {

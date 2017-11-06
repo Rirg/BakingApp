@@ -1,7 +1,6 @@
-package com.example.ricardo.bakingapp.ui;
+package com.example.ricardo.bakingapp.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,9 +27,10 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
     private static final String TAG = "StepsListFragment";
 
     private OnStepSelected mCallback;
+    private int mId;
 
-    interface OnStepSelected{
-        void onStepSelected(int pos);
+    public interface OnStepSelected{
+        void onStepSelected(int pos, int id);
     }
 
     private StepsAdapter mAdapter;
@@ -38,6 +38,7 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        // Makes sure that the StepsActivity implemented the callback interface
         try {
             mCallback = (OnStepSelected) context;
         } catch (ClassCastException e) {
@@ -59,7 +60,9 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
         TextView ingredientsTv = rootView.findViewById(R.id.recipe_ingredients_tv);
         ingredientsTv.setOnClickListener(this);
 
+        // Retrieve all the steps and id from the current recipe
         ArrayList<Step> steps = getArguments().getParcelableArrayList("steps");
+        mId = getArguments().getInt("recipeId");
 
         mAdapter = new StepsAdapter(steps, this);
 
@@ -74,14 +77,13 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
     @Override
     public void onListItemClickListener(int pos) {
         Log.i(TAG, "onListItemClickListener: " + pos);
-        mCallback.onStepSelected(pos);
+        // Send the position using the callback to the StepsActivity
+        mCallback.onStepSelected(pos, -1);
     }
 
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent();
-
-        // TODO launch an intent for the ingredients
-
+        // Use the callback to send the id to the StepsActivity
+        mCallback.onStepSelected(-1, mId);
     }
 }

@@ -108,9 +108,10 @@ public class FetchRecipesData extends AsyncTask<Void, Void, String> {
             switch (mCode) {
 
                 case RECIPES_CODE:
-
+                    // Create a new ArrayList of Recipes to hold all the recipes
                     ArrayList<Recipe> recipes = new ArrayList<>();
 
+                    // Iterate in the entire JSONArray to get all the recipes
                     for (int i = 0; i < recipesData.length(); i++) {
                         JSONObject object = recipesData.getJSONObject(i);
                         recipes.add(new Recipe(object.getInt("id"),
@@ -119,21 +120,35 @@ public class FetchRecipesData extends AsyncTask<Void, Void, String> {
                                 object.getString("image")));
                         Log.i(TAG, "fetchFromJson: " + object.getString("name"));
                     }
+                    // Send the array with the results using the callback
                     mCallback.onTaskCompleted(recipes, null, null);
                     break;
 
                 case INGREDIENTS_CODE:
+                    // Create a new ArrayList of Ingredients to hold all the ingredients
                     ArrayList<Ingredient> ingredients = new ArrayList<>();
 
+                    // Iterate in the entire JSONArray to find the object with the requested id
                     for (int i = 0; i < recipesData.length(); i++) {
                         JSONObject object = recipesData.getJSONObject(i);
+
+                        // Check the object with the requested id
                         if (object.getInt("id") == mId) {
-                            ingredients.add(new Ingredient(
-                                    object.getDouble("quantity"),
-                                    object.getString("measure"),
-                                    object.getString("ingredient")));
+
+                            // Get the array of ingredients that match with the id
+                            JSONArray arrayIngredients = object.getJSONArray("ingredients");
+
+                            // Iterate in the entire array of ingredients
+                            for (i = 0; i < arrayIngredients.length(); i++) {
+                                JSONObject currentIngredient = arrayIngredients.getJSONObject(i);
+                                ingredients.add(new Ingredient(
+                                        currentIngredient.getDouble("quantity"),
+                                        currentIngredient.getString("measure"),
+                                        currentIngredient.getString("ingredient")));
+                            }
                         }
                         Log.i(TAG, "fetchFromJson: " + object.getString("name"));
+                        // Send the array with the results using the callback
                         mCallback.onTaskCompleted(null, ingredients, null);
                     }
                     break;
@@ -145,7 +160,6 @@ public class FetchRecipesData extends AsyncTask<Void, Void, String> {
                     // Iterate in the entire JSONArray
                     for (int i = 0; i < recipesData.length(); i++) {
                         JSONObject object = recipesData.getJSONObject(i);
-                        Log.i(TAG, "fetchFromJson: " + object.getInt("id"));
 
                         // Check the id of the object with the passed id
                         if (object.getInt("id") == mId) {
@@ -165,6 +179,7 @@ public class FetchRecipesData extends AsyncTask<Void, Void, String> {
                             }
                         }
                     }
+                    // Send the array with the results using the callback
                     mCallback.onTaskCompleted(null, null, steps);
                     break;
             }

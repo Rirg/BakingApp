@@ -5,6 +5,6 @@
     android:name="com.example.ricardo.bakingapp.ui.StepsListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ricardo.bakingapp.ui.StepsActivity">
+    tools:context="com.example.ricardo.bakingapp.activities.StepsActivity">
 
 </FrameLayout>

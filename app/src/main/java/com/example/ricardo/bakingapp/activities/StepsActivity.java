@@ -1,4 +1,4 @@
-package com.example.ricardo.bakingapp.ui;
+package com.example.ricardo.bakingapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.ricardo.bakingapp.R;
+import com.example.ricardo.bakingapp.fragments.StepDetailFragment;
+import com.example.ricardo.bakingapp.fragments.StepsListFragment;
 import com.example.ricardo.bakingapp.pojos.Ingredient;
 import com.example.ricardo.bakingapp.pojos.Recipe;
 import com.example.ricardo.bakingapp.pojos.Step;
@@ -36,7 +38,7 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
 
         if (findViewById(R.id.details_container) != null) mTwoPane = true;
 
-        new FetchRecipesData(this , this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
+        new FetchRecipesData(this, this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
 
     }
 
@@ -45,8 +47,10 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
 
         mSteps = steps;
 
+        // Create a bundle to save and send all the steps and the id of the current recipe
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("steps", mSteps);
+        bundle.putInt("recipeId", mCurrentRecipe.getId());
 
         StepsListFragment fragment = new StepsListFragment();
         fragment.setArguments(bundle);
@@ -72,21 +76,36 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
     }
 
     @Override
-    public void onStepSelected(int pos) {
-        if (mTwoPane) {
-            StepDetailFragment detailFragment = new StepDetailFragment();
+    public void onStepSelected(int pos, int id) {
+        // Is a step option
+        if (pos != -1) {
+            if (mTwoPane) {
+                StepDetailFragment detailFragment = new StepDetailFragment();
 
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction()
-                    .replace(R.id.details_container, detailFragment)
-                    .commit();
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.details_container, detailFragment)
+                        .commit();
 
-            detailFragment.setCurrentStep(mSteps.get(pos));
-        } else {
-            Intent intent = new Intent(this, StepDetailActivity.class);
-            intent.putExtra("position", pos);
-            intent.putParcelableArrayListExtra("steps", mSteps);
-            startActivity(intent);
+                detailFragment.setCurrentStep(mSteps.get(pos));
+            } else {
+                Intent intent = new Intent(this, StepDetailActivity.class);
+                intent.putExtra("position", pos);
+                intent.putParcelableArrayListExtra("steps", mSteps);
+                startActivity(intent);
+            }
+        }
+        // Is the ingredients option
+        else {
+            if (mTwoPane) {
+                // TODO inflate the Ingredients fragment
+            } else {
+                // TODO launch an intent for the Ingredients activity
+                Intent intent = new Intent(this, IngredientsActivity.class);
+                // Send the id of the current recipe to the IngredientsActivity
+                intent.putExtra("id", id);
+                startActivity(intent);
+            }
         }
     }
 
