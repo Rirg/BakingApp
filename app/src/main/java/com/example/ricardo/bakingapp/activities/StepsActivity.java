@@ -37,12 +37,19 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
 
         Log.i(TAG, "onCreate: " + mCurrentRecipe.getName());
 
-
+        // Check if is two pane or single
         if (findViewById(R.id.details_container) != null) mTwoPane = true;
 
-        // Fetch the steps and ingredients
-        new FetchRecipesData(this, this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
-        new FetchRecipesData(this, this, FetchRecipesData.INGREDIENTS_CODE, mCurrentRecipe.getId()).execute();
+        // Retrieve the step list and ingredients list from the bundle if there is
+        if (savedInstanceState != null) {
+            mSteps = savedInstanceState.getParcelableArrayList("steps");
+            mIngredients = savedInstanceState.getParcelableArrayList("ingredients");
+        }
+        // Fetch the steps and ingredients just if we have null list
+        if (mSteps == null || mIngredients == null) {
+            new FetchRecipesData(this, this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
+            new FetchRecipesData(this, this, FetchRecipesData.INGREDIENTS_CODE, mCurrentRecipe.getId()).execute();
+        }
     }
 
     @Override
@@ -86,6 +93,14 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
                         .commit();
             }
         }
+    }
+
+    // Save the steps and ingredients list in the bundle
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("steps", mSteps);
+        outState.putParcelableArrayList("ingredients", mIngredients);
     }
 
     @Override

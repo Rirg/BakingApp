@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.pojos.Step;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -43,7 +44,8 @@ public class StepDetailFragment extends Fragment {
 
     private Step mCurrentStep;
     private ArrayList<Step> mSteps;
-    long mPlayerPos = 0;
+    long mPlayerPos = C.TIME_UNSET;
+    private Uri mVideoUri;
     private static final String TAG = "StepDetailFragment";
 
 
@@ -60,7 +62,7 @@ public class StepDetailFragment extends Fragment {
         if (savedInstanceState != null) {
             // Get the current step
             mCurrentStep = savedInstanceState.getParcelable("step");
-            mPlayerPos = savedInstanceState.getLong("playerPos");
+            mPlayerPos = savedInstanceState.getLong("playerPos", C.TIME_UNSET);
             Log.i(TAG, "onCreateView: " + mPlayerPos);
         }
 
@@ -76,20 +78,39 @@ public class StepDetailFragment extends Fragment {
             }
         }
 
+        // Check the current step and the description text view to set the description if it's in
+        // portrait orientation
         if (mCurrentStep != null && descriptionTv != null) {
             descriptionTv.setText(mCurrentStep.getDescription());
         }
 
         if(mCurrentStep != null) {
-            Log.i(TAG, "SI HAY: " + mCurrentStep.getVideoUrl());
-
+            mVideoUri = Uri.parse(mCurrentStep.getVideoUrl());
             // Initialize the Media Session and the Player
-            initializeMediaSession();
-            initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
+//            initializeMediaSession();
+//            initializePlayer(mVideoUri);
         }
 
 
         return rootView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Save the current position of the player before releasing it
+        if (mExoPlayer != null) {
+            mPlayerPos = mExoPlayer.getCurrentPosition();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mVideoUri != null) {
+            initializePlayer(mVideoUri);
+            initializeMediaSession();
+        }
     }
 
     @Override
@@ -103,8 +124,8 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putLong("playerPos", mPlayerPos);
         outState.putParcelable("step", mCurrentStep);
-        outState.putLong("playerPos", mExoPlayer.getCurrentPosition());
     }
 
 
@@ -129,6 +150,7 @@ public class StepDetailFragment extends Fragment {
             String userAgent = Util.getUserAgent(getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
+            if (mPlayerPos != C.TIME_UNSET) mExoPlayer.seekTo(mPlayerPos);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
@@ -175,6 +197,7 @@ public class StepDetailFragment extends Fragment {
         mMediaSession.setActive(true);
 
     }
+
 
     /**
      * Media Session Callbacks, where all external clients control the player.
