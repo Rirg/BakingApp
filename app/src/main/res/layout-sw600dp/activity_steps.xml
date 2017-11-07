@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    xmlns:tools="http://schemas.android.com/tools"
     android:weightSum="10">
 
+    <!--Steps list container-->
     <FrameLayout
         android:id="@+id/steps_container"
         android:name="com.example.ricardo.bakingapp.ui.StepsListFragment"
@@ -13,6 +13,13 @@
         android:layout_height="match_parent"
         android:layout_weight="3" />
 
+    <!--Divider-->
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray" />
+
+    <!--Details container-->
     <FrameLayout
         android:id="@+id/details_container"
         android:name="com.example.ricardo.bakingapp.ui.StepDetailFragment"

@@ -24,8 +24,8 @@ public class StepDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_step_detail);
 
-        Button btnPrev = (Button) findViewById(R.id.detail_btn_prev);
-        Button btnNext = (Button) findViewById(R.id.detail_btn_next);
+        Button btnPrev = findViewById(R.id.detail_btn_prev);
+        Button btnNext = findViewById(R.id.detail_btn_next);
 
         // Set the video in fullscreen when the device is in landscape
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

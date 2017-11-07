@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--Static text view for the ingredients-->
     <TextView
         android:id="@+id/recipe_ingredients_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:background="?attr/selectableItemBackground"
         android:text="Recipe ingredients"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
+    <!--Recycler view for the steps-->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/steps_list_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:listitem="@layout/step_list_item" />
 
 </LinearLayout>

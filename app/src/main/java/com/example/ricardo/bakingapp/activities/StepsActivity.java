@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.ricardo.bakingapp.R;
+import com.example.ricardo.bakingapp.fragments.IngredientsFragment;
 import com.example.ricardo.bakingapp.fragments.StepDetailFragment;
 import com.example.ricardo.bakingapp.fragments.StepsListFragment;
 import com.example.ricardo.bakingapp.pojos.Ingredient;
@@ -20,6 +21,7 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
 
     private Recipe mCurrentRecipe;
     private ArrayList<Step> mSteps;
+    private ArrayList<Ingredient> mIngredients;
 
     private static final String TAG = "StepsActivity";
     private boolean mTwoPane = false;
@@ -38,47 +40,58 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
 
         if (findViewById(R.id.details_container) != null) mTwoPane = true;
 
+        // Fetch the steps and ingredients
         new FetchRecipesData(this, this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
-
+        new FetchRecipesData(this, this, FetchRecipesData.INGREDIENTS_CODE, mCurrentRecipe.getId()).execute();
     }
 
     @Override
     public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients, ArrayList<Step> steps) {
-
-        mSteps = steps;
-
-        // Create a bundle to save and send all the steps and the id of the current recipe
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("steps", mSteps);
-        bundle.putInt("recipeId", mCurrentRecipe.getId());
-
-        StepsListFragment fragment = new StepsListFragment();
-        fragment.setArguments(bundle);
-
-
+        // Variables that we will need
+        Bundle bundle;
         FragmentManager manager = getSupportFragmentManager();
 
-        manager.beginTransaction()
-                .add(R.id.steps_container, fragment)
-                .commit();
+        // Save the ingredients array in the global variable just if it isn't null
+        if (ingredients != null) mIngredients = ingredients;
 
-        if (mTwoPane) {
+        // Make sure that we don't have a null array to proceed
+        if (steps != null) {
+            mSteps = steps;
+
+            // Create a bundle to save and send all the steps and the id of the current recipe
             bundle = new Bundle();
             bundle.putParcelableArrayList("steps", mSteps);
+            bundle.putInt("recipeId", mCurrentRecipe.getId());
 
-            StepDetailFragment detailFragment = new StepDetailFragment();
-            detailFragment.setArguments(bundle);
+            // Inflate a new instance of the StepsListFragment using the fragment manager
+            // to show the steps list.
+            StepsListFragment fragment = new StepsListFragment();
+            fragment.setArguments(bundle);
 
             manager.beginTransaction()
-                    .add(R.id.details_container, detailFragment)
+                    .add(R.id.steps_container, fragment)
                     .commit();
+
+
+            // If it's a tablet, inflate the StepDetailFragment and send all the steps in a bundle
+            if (mTwoPane) {
+                bundle = new Bundle();
+                bundle.putParcelableArrayList("steps", mSteps);
+
+                StepDetailFragment detailFragment = new StepDetailFragment();
+                detailFragment.setArguments(bundle);
+
+                manager.beginTransaction()
+                        .add(R.id.details_container, detailFragment)
+                        .commit();
+            }
         }
     }
 
     @Override
     public void onStepSelected(int pos, int id) {
         // Is a step option
-        if (pos != -1) {
+        if (id == -1) {
             if (mTwoPane) {
                 StepDetailFragment detailFragment = new StepDetailFragment();
 
@@ -98,15 +111,23 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
         // Is the ingredients option
         else {
             if (mTwoPane) {
-                // TODO inflate the Ingredients fragment
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("ingredients", mIngredients);
+
+                IngredientsFragment ingredientsFragment = new IngredientsFragment();
+                ingredientsFragment.setArguments(bundle);
+
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.details_container, ingredientsFragment)
+                        .commit();
             } else {
-                // TODO launch an intent for the Ingredients activity
                 Intent intent = new Intent(this, IngredientsActivity.class);
+
                 // Send the id of the current recipe to the IngredientsActivity
-                intent.putExtra("id", id);
+                intent.putParcelableArrayListExtra("ingredients", mIngredients);
                 startActivity(intent);
             }
         }
     }
-
 }

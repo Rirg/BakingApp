@@ -70,6 +70,7 @@ public class StepDetailFragment extends Fragment {
             Bundle extras = getArguments();
             if (extras != null && extras.getParcelableArrayList("steps") != null) {
                 mSteps = extras.getParcelableArrayList("steps");
+                // Set as default the first step
                 mCurrentStep = mSteps.get(extras.getInt("pos"));
 
             }
@@ -79,9 +80,14 @@ public class StepDetailFragment extends Fragment {
             descriptionTv.setText(mCurrentStep.getDescription());
         }
 
-        // Initialize the Media Session and the Player
-        initializeMediaSession();
-        initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
+        if(mCurrentStep != null) {
+            Log.i(TAG, "SI HAY: " + mCurrentStep.getVideoUrl());
+
+            // Initialize the Media Session and the Player
+            initializeMediaSession();
+            initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
+        }
+
 
         return rootView;
     }

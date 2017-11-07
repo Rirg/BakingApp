@@ -1,10 +1,13 @@
 package com.example.ricardo.bakingapp.pojos;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Ricardo on 9/18/17.
  */
 
-public class Ingredient {
+public class Ingredient implements Parcelable {
 
     private double quantity;
     private String measure;
@@ -17,6 +20,24 @@ public class Ingredient {
         this.measure = measure;
         this.name = name;
     }
+
+    protected Ingredient(Parcel in) {
+        quantity = in.readDouble();
+        measure = in.readString();
+        name = in.readString();
+    }
+
+    public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
+        @Override
+        public Ingredient createFromParcel(Parcel in) {
+            return new Ingredient(in);
+        }
+
+        @Override
+        public Ingredient[] newArray(int size) {
+            return new Ingredient[size];
+        }
+    };
 
     public double getQuantity() {
         return quantity;
@@ -40,5 +61,17 @@ public class Ingredient {
 
     public void setMeasure(String measure) {
         this.measure = measure;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeDouble(quantity);
+        parcel.writeString(measure);
+        parcel.writeString(name);
     }
 }

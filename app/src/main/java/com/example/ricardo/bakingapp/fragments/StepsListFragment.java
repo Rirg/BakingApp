@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Created by Ricardo on 9/16/17.
  */
 
-public class StepsListFragment extends Fragment implements StepsAdapter.ListItemClickListener, View.OnClickListener {
+public class StepsListFragment extends Fragment implements StepsAdapter.ListItemClickListener {
 
     private static final String TAG = "StepsListFragment";
 
@@ -58,7 +58,6 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
         View rootView = inflater.inflate(R.layout.fragment_steps_list, container, false);
 
         TextView ingredientsTv = rootView.findViewById(R.id.recipe_ingredients_tv);
-        ingredientsTv.setOnClickListener(this);
 
         // Retrieve all the steps and id from the current recipe
         ArrayList<Step> steps = getArguments().getParcelableArrayList("steps");
@@ -69,6 +68,15 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
         RecyclerView rv = rootView.findViewById(R.id.steps_list_rv);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(mAdapter);
+
+        // Set the onClickListener for the Ingredients TextView
+        ingredientsTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Use the callback to send the id to the StepsActivity
+                mCallback.onStepSelected(-1, mId);
+            }
+        });
 
         return rootView;
     }
@@ -81,9 +89,4 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
         mCallback.onStepSelected(pos, -1);
     }
 
-    @Override
-    public void onClick(View view) {
-        // Use the callback to send the id to the StepsActivity
-        mCallback.onStepSelected(-1, mId);
-    }
 }

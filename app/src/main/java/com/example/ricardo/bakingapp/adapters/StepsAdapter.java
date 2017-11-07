@@ -56,7 +56,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
 
         TextView shortDescriptionTv;
 
-        public ViewHolder(View itemView) {
+         ViewHolder(View itemView) {
             super(itemView);
 
             shortDescriptionTv = itemView.findViewById(R.id.step_short_description_tv);

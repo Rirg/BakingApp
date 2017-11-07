@@ -38,6 +38,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
     @Override
     public int getItemCount() {
+        if (mIngredients == null) return 0;
         return mIngredients.size();
     }
 
@@ -57,8 +58,8 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
         void bind(int pos) {
             ingredient.setText(mIngredients.get(pos).getName());
-            measure.setText(mIngredients.get(pos).getMeasure());
-            quantity.setText(String.valueOf(mIngredients.get(pos).getQuantity()));
+            measure.setText("Measure: " + mIngredients.get(pos).getMeasure());
+            quantity.setText("Quantity: " + String.valueOf(mIngredients.get(pos).getQuantity()));
         }
 
     }
