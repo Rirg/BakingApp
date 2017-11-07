@@ -116,7 +116,6 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "onDestroy: " + "se destruye el mediaplayer");
         releasePlayer();
         mMediaSession.setActive(false);
     }

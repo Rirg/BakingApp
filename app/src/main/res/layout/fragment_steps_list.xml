@@ -11,12 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="?attr/selectableItemBackground"
+        android:layout_margin="8dp"
+        android:background="@drawable/border"
+        android:foreground="?attr/selectableItemBackground"
         android:text="Recipe ingredients"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <!--Recycler view for the steps-->
     <android.support.v7.widget.RecyclerView
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
         android:id="@+id/steps_list_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
