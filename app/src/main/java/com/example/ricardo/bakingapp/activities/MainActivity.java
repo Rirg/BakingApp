@@ -20,17 +20,24 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Li
         FetchRecipesData.OnTaskCompleted {
 
     private RecipesAdapter mAdapter;
+    private ArrayList<Recipe> mRecipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Recipes ArrayList
-        ArrayList<Recipe> recipes = new ArrayList<>();
-        RecyclerView recyclerView;
-        mAdapter = new RecipesAdapter(recipes, this);
+        // Check the bundle to retrieve the list if there is
+        if (savedInstanceState != null) {
+            mRecipes = savedInstanceState.getParcelableArrayList("recipes");
+            mAdapter = new RecipesAdapter(mRecipes, this);
+        }
+        // Else, just send an empty list and swap the list later in the onTaskCompleted callback
+        else {
+            mAdapter = new RecipesAdapter(new ArrayList<Recipe>(), this);
+        }
 
+        RecyclerView recyclerView;
         // Check if is a tablet or cellphone
         if (findViewById(R.id.recipes_grid_rv) != null) {
             recyclerView =  findViewById(R.id.recipes_grid_rv);
@@ -43,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Li
         recyclerView.setAdapter(mAdapter);
         recyclerView.setHasFixedSize(true);
 
-        new FetchRecipesData(this, this, FetchRecipesData.RECIPES_CODE, -1).execute();
+
+        // Fetch data just if the recipes list is null
+        if (mRecipes == null) new FetchRecipesData(this, this, FetchRecipesData.RECIPES_CODE, -1).execute();
 
     }
 
@@ -58,7 +67,15 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Li
     @Override
     public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients, ArrayList<Step> steps) {
         if (recipes != null) {
+            mRecipes = recipes;
             mAdapter.swapList(recipes);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("recipes", mRecipes);
+
     }
 }

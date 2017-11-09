@@ -37,15 +37,18 @@ import java.util.ArrayList;
 
 public class StepDetailFragment extends Fragment {
 
+    /* Media variables */
     private SimpleExoPlayer mExoPlayer;
     private SimpleExoPlayerView mPlayerView;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private Uri mVideoUri;
+    private long mPlayerPos = C.TIME_UNSET;
 
+    /* Variables to hold the current and all the steps in the recipe */
     private Step mCurrentStep;
     private ArrayList<Step> mSteps;
-    long mPlayerPos = C.TIME_UNSET;
-    private Uri mVideoUri;
+
     private static final String TAG = "StepDetailFragment";
 
 
@@ -149,6 +152,7 @@ public class StepDetailFragment extends Fragment {
             String userAgent = Util.getUserAgent(getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
+            // Check if there is a position saved
             if (mPlayerPos != C.TIME_UNSET) mExoPlayer.seekTo(mPlayerPos);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
