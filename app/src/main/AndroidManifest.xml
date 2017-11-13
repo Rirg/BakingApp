@@ -39,8 +39,17 @@
                 android:resource="@xml/ingredients_widget_provider_info" />
         </receiver>
 
-        <service android:name=".ListWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+        <service
+            android:name=".ListWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <activity android:name=".IngredientsWidgetConfigure">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+
+
     </application>
 
 </manifest>

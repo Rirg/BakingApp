@@ -1,8 +1,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appwidget_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/widget_margin"
-    android:orientation="vertical">
+    android:background="#FFF"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin">
+
+    <TextView
+        android:id="@+id/appwidget_recipe_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textSize="20sp"
+        android:gravity="center"
+        tools:text="Nutella Pie" />
 
     <ListView
         android:id="@+id/appwidget_listview"
@@ -11,12 +23,15 @@
         android:layout_margin="8dp"
         android:textSize="24sp"
         android:textStyle="bold|italic" />
-    
+
     <TextView
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:text="No Ingredients"/>
+        android:gravity="center"
+        android:text="No recipe selected"
+        android:textSize="20sp" />
+
 
 </LinearLayout>

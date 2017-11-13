@@ -1,11 +1,15 @@
 package com.example.ricardo.bakingapp;
 
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.example.ricardo.bakingapp.activities.MainActivity;
 import com.example.ricardo.bakingapp.pojos.Ingredient;
 import com.example.ricardo.bakingapp.pojos.Recipe;
 import com.example.ricardo.bakingapp.pojos.Step;
@@ -19,39 +23,50 @@ import java.util.ArrayList;
 
 public class ListWidgetService extends RemoteViewsService {
 
+    private static final String TAG = "ListWidgetService";
+
+    @Override
     public RemoteViewsService.RemoteViewsFactory onGetViewFactory(Intent intent) {
+        Log.i(TAG, "onGetViewFactory: " + intent.getExtras().getInt("recipeId"));
         return new ListRemoteViewsFactory(this.getApplicationContext(), intent);
     }
 }
 
-class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-
+class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, FetchRecipesData.OnTaskCompleted {
+    private static final String TAG = "ListRemoteViewsFactory";
     private Context mContext;
     private ArrayList<String> mIngredients;
-
+    private int mAppWidgetId;
+    private int mRecipeId;
 
     public ListRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
+        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                AppWidgetManager.INVALID_APPWIDGET_ID);
+        // Get the recipe id from the shared preferences using the AppWidget id
+        mRecipeId = mContext.getSharedPreferences(mContext.getPackageName(),
+                Context.MODE_PRIVATE).getInt("recipeId" + String.valueOf(mAppWidgetId), 1);
     }
 
     // Initialize the data set.
-
+    @Override
     public void onCreate() {
 
         // In onCreate() you set up any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
         mIngredients = new ArrayList<>();
-        mIngredients.add("sal");
-        mIngredients.add("jengibre");
-        mIngredients.add("azucar");
-        mIngredients.add("pimienta");
-
+        Log.i(TAG, "onCreate: " + "entra al oncreate");
+        new FetchRecipesData(mContext, this, FetchRecipesData.INGREDIENTS_CODE, mRecipeId).execute();
     }
 
     // Given the position (index) of a WidgetItem in the array, use the item's text value in
     // combination with the app widget item XML file to construct a RemoteViews object.
+    @Override
     public RemoteViews getViewAt(int position) {
+
+        Log.i(TAG, "getViewAt: " + "entra al get view at");
+
         // position will always range from 0 to getCount() - 1.
         // Construct a RemoteViews item based on the app widget item XML file, and set the
         // text based on the position.
@@ -68,53 +83,70 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         extras.putInt(IngredientsWidgetProvider.EXTRA_ITEM, position);
 
-        Intent fillInIntent = new Intent();
+        Intent fillInIntent = new Intent(mContext, MainActivity.class);
         fillInIntent.putExtra("homescreen_meeting", ingredient);
         fillInIntent.putExtras(extras);
 
-        // Make it possible to distinguish the individual on-click
-        // action of a given item
-        rv.setOnClickFillInIntent(R.id.ingredient_name_tv, fillInIntent);
+        Intent intent = new Intent(mContext, MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Make it possible to distinguish the individual on-click action of a given item
+        //rv.setOnClickFillInIntent(R.id.ingredient_name_tv, fillInIntent);
 
         // Return the RemoteViews object.
         return rv;
     }
 
+    @Override
     public int getCount() {
         if (mIngredients == null) return 0;
         return mIngredients.size();
     }
 
+    @Override
     public void onDataSetChanged() {
         // Fetching JSON data from server and add them to mIngredients arraylist
-        new FetchRecipesData(mContext, new FetchRecipesData.OnTaskCompleted() {
-            @Override
-            public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients, ArrayList<Step> steps) {
-                for (Ingredient ingredient : ingredients) {
-                    mIngredients.add(ingredient.getName());
-                }
-            }
-        }, FetchRecipesData.INGREDIENTS_CODE, 2);
+        Log.i(TAG, "onDataSetChanged: " + "entra");
     }
 
+    @Override
     public int getViewTypeCount() {
         return 1;
     }
 
+    @Override
     public long getItemId(int position) {
         return position;
     }
 
+    @Override
     public void onDestroy() {
         mIngredients.clear();
     }
 
+    @Override
     public boolean hasStableIds() {
         return true;
     }
 
+    @Override
     public RemoteViews getLoadingView() {
         return null;
     }
 
+    @Override
+    public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients,
+                                ArrayList<Step> steps) {
+        // Check if the ArrayList isn't null
+        if (ingredients != null) {
+            // Clear the list before adding new items
+            mIngredients.clear();
+            // Foreach loop to get all the ingredients names and add them to the list
+            for (Ingredient ingredient : ingredients) {
+                mIngredients.add(ingredient.getName());
+            }
+            // Notify the AppWidget using the AppWidgetManager
+            AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(mAppWidgetId,
+                    R.id.appwidget_listview);
+        }
+    }
 }
