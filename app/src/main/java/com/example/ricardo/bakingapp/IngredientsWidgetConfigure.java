@@ -1,5 +1,6 @@
 package com.example.ricardo.bakingapp;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -7,13 +8,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 
+import com.example.ricardo.bakingapp.activities.IngredientsActivity;
 import com.example.ricardo.bakingapp.pojos.Ingredient;
 import com.example.ricardo.bakingapp.pojos.Recipe;
 import com.example.ricardo.bakingapp.pojos.Step;
@@ -29,8 +30,6 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
     private ArrayAdapter<String> mAdapter;
     private int mAppWidgetId;
     private SharedPreferences preferences;
-
-    private static final String TAG = "IngredientsWidgetConfig";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +71,6 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
     public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients,
                                 ArrayList<Step> steps) {
         if (recipes != null) {
-            Log.i(TAG, "onTaskCompleted: " + recipes.get(1).getName());
             mRecipes = recipes;
             for (Recipe recipe : recipes) {
                 mRecipesNames.add(recipe.getName());
@@ -85,10 +83,8 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         // Save the selected option in SharedPreferences using the AppWidgetId, this way it will be
         // unique for every instance of the widget
-        Log.i(TAG, "onItemClick: WIDGET ID: " + String.valueOf(mAppWidgetId));
         preferences.edit().putInt("recipeId" + String.valueOf(mAppWidgetId), mRecipes.get(i).getId()).apply();
         preferences.edit().putString("recipeName"+ String.valueOf(mAppWidgetId), mRecipes.get(i).getName()).apply();
-        Log.i(TAG, "onItemClick: " + mRecipesNames.get(i));
 
         // Inflate the initial layout when the user place the widget for the first time
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
@@ -104,6 +100,18 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
 
         // Set the Remote Adapter to inflate the ListView with the ingredients
         views.setRemoteAdapter(R.id.appwidget_listview, intent);
+
+        // Trigger general recipe click
+        Intent startActivityIntent = new Intent(getApplicationContext(), IngredientsActivity.class);
+
+        // Send the recipe id as an extra
+        startActivityIntent.putExtra("recipeId", mRecipes.get(i).getId());
+
+        // Create the PendingIntent using the AppWidgetId as unique request code to get individual
+        // data for every instance of the Widget
+        PendingIntent startActivityPendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                mAppWidgetId, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.appwidget_recipe_name, startActivityPendingIntent);
 
         // Set an empty view
         views.setEmptyView(R.id.appwidget_listview, R.id.empty_view);

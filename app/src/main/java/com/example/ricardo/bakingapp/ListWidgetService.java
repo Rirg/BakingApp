@@ -27,6 +27,7 @@ public class ListWidgetService extends RemoteViewsService {
 
     @Override
     public RemoteViewsService.RemoteViewsFactory onGetViewFactory(Intent intent) {
+        Log.i(TAG, "onGetViewFactory: " + intent.getAction());
         Log.i(TAG, "onGetViewFactory: " + intent.getExtras().getInt("recipeId"));
         return new ListRemoteViewsFactory(this.getApplicationContext(), intent);
     }
@@ -81,7 +82,7 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
         // that is set on the collection view in ListViewWidgetProvider.
         Bundle extras = new Bundle();
 
-        extras.putInt(IngredientsWidgetProvider.EXTRA_ITEM, position);
+        //extras.putInt(IngredientsWidgetProvider.EXTRA_ITEM, position);
 
         Intent fillInIntent = new Intent(mContext, MainActivity.class);
         fillInIntent.putExtra("homescreen_meeting", ingredient);

@@ -18,48 +18,20 @@ package com.example.ricardo.bakingapp;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.example.ricardo.bakingapp.activities.MainActivity;
-
-import java.util.ArrayList;
+import com.example.ricardo.bakingapp.activities.IngredientsActivity;
 
 public class IngredientsWidgetProvider extends AppWidgetProvider {
 
-    private static final String TAG = "IngredientsWidgetProvid";
-
-    public static final String UPDATE_MEETING_ACTION = "android.appwidget.action.APPWIDGET_UPDATE";
-    public static final String EXTRA_ITEM = "com.example.edockh.EXTRA_ITEM";
-    private ArrayList<String> mIngredients = new ArrayList<>();
-    Context mContext;
-    int[] mAppWidgetIds;
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-
-
-        AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-        Log.i(TAG, "onReceive: " + "Entra al onreceive");
-
-        if (intent.getAction().equals(UPDATE_MEETING_ACTION)) {
-            int appWidgetIds[] = mgr.getAppWidgetIds(new ComponentName(context, IngredientsWidgetProvider.class));
-            Log.i("received", intent.getAction());
-            mgr.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.appwidget_listview);
-        }
-        super.onReceive(context, intent);
-    }
-
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        mContext = context;
-        mAppWidgetIds = appWidgetIds;
-
-        Log.i(TAG, "onUpdate: " + "entered onUpdate");
+        // Get the shared preferences using the context to retrieve the recipe name and recipe id
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
         // update each of the app widgets with the remote adapter
         for (int appWidgetId : appWidgetIds) {
@@ -69,7 +41,6 @@ public class IngredientsWidgetProvider extends AppWidgetProvider {
             Intent intent = new Intent(context, ListWidgetService.class);
 
             // Add the app widget ID to the intent extras.
-            intent.putStringArrayListExtra("ingredients", mIngredients);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
@@ -77,8 +48,7 @@ public class IngredientsWidgetProvider extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
 
             // Get the recipe name from the Shared Preferences using the AppWidget Id as key
-            String recipeName = mContext.getSharedPreferences(mContext.getPackageName(),
-                    Context.MODE_PRIVATE).getString("recipeName" + String.valueOf(appWidgetId), "");
+            String recipeName = preferences.getString("recipeName" + String.valueOf(appWidgetId), "");
             views.setTextViewText(R.id.appwidget_recipe_name, recipeName);
 
             // Set up the RemoteViews object to use a RemoteViews adapter.
@@ -86,13 +56,18 @@ public class IngredientsWidgetProvider extends AppWidgetProvider {
             // This is how you populate the data.
             views.setRemoteAdapter(R.id.appwidget_listview, intent);
 
-            // Trigger ListView item click
-            Intent startActivityIntent = new Intent(context, MainActivity.class);
-            PendingIntent startActivityPendingIntent = PendingIntent.getActivity(context,
-                    0, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            //views.setPendingIntentTemplate(R.id.appwidget_listview, startActivityPendingIntent);
+            // Trigger general recipe click
+            Intent startActivityIntent = new Intent(context, IngredientsActivity.class);
 
-            views.setOnClickPendingIntent(R.id.appwidget_parent, startActivityPendingIntent);
+            // Send the recipe id as extra in the intent, retrieve it from SharedPreferences
+            startActivityIntent.putExtra("recipeId", preferences.getInt("recipeId" + String.valueOf(appWidgetId), 1));
+
+            // Create the PendingIntent using the AppWidgetId as unique request code to get individual
+            // data for every instance of the Widget
+            PendingIntent startActivityPendingIntent = PendingIntent.getActivity(context,
+                    appWidgetId, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            views.setOnClickPendingIntent(R.id.appwidget_recipe_name, startActivityPendingIntent);
 
             // The empty view is displayed when the collection has no items.
             // It should be in the same layout used to instantiate the RemoteViews  object above.

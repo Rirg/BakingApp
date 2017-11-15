@@ -32,6 +32,7 @@
         <receiver android:name=".IngredientsWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.OPEN_INGREDIENTS" />
             </intent-filter>
 
             <meta-data
