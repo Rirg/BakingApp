@@ -27,10 +27,9 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
         // Create a new ArrayList of Ingredients to inflate the ListView
         ArrayList<Ingredient> ingredients = new ArrayList<>();
 
-        // Save the extras from the intent in a bundle variable
+        // Get the extras from the intent in a bundle variable
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            // Get the ingredients ArrayList from the intent sent by
             if (getIntent().hasExtra("ingredients")) {
                 ingredients = extras.getParcelableArrayList("ingredients");
             } else if (getIntent().hasExtra("recipeId")) {
@@ -40,11 +39,21 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
             }
         }
 
+
         // Set up the recycler view with the ingredients
         RecyclerView recyclerView = findViewById(R.id.ingredients_rv);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
         mAdapter = new IngredientsAdapter(ingredients);
         recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Finish the activity when is launched from the widget and the activity is no longer visible
+        // (e.g user pressed home button)
+        if (getIntent().hasExtra("recipeId")) finish();
     }
 
     @Override

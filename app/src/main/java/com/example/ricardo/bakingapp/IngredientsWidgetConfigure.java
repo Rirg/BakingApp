@@ -81,8 +81,8 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        // Save the selected option in SharedPreferences using the AppWidgetId, this way it will be
-        // unique for every instance of the widget
+        // Save the selected option recipe id and recipe name in SharedPreferences using the
+        // AppWidgetId, this way it will be unique for every instance of the widget
         preferences.edit().putInt("recipeId" + String.valueOf(mAppWidgetId), mRecipes.get(i).getId()).apply();
         preferences.edit().putString("recipeName"+ String.valueOf(mAppWidgetId), mRecipes.get(i).getName()).apply();
 

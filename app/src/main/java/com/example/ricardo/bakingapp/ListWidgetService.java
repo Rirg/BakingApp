@@ -1,6 +1,5 @@
 package com.example.ricardo.bakingapp;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -23,12 +22,8 @@ import java.util.ArrayList;
 
 public class ListWidgetService extends RemoteViewsService {
 
-    private static final String TAG = "ListWidgetService";
-
     @Override
     public RemoteViewsService.RemoteViewsFactory onGetViewFactory(Intent intent) {
-        Log.i(TAG, "onGetViewFactory: " + intent.getAction());
-        Log.i(TAG, "onGetViewFactory: " + intent.getExtras().getInt("recipeId"));
         return new ListRemoteViewsFactory(this.getApplicationContext(), intent);
     }
 }
@@ -66,8 +61,6 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
     @Override
     public RemoteViews getViewAt(int position) {
 
-        Log.i(TAG, "getViewAt: " + "entra al get view at");
-
         // position will always range from 0 to getCount() - 1.
         // Construct a RemoteViews item based on the app widget item XML file, and set the
         // text based on the position.
@@ -88,11 +81,6 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
         fillInIntent.putExtra("homescreen_meeting", ingredient);
         fillInIntent.putExtras(extras);
 
-        Intent intent = new Intent(mContext, MainActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // Make it possible to distinguish the individual on-click action of a given item
-        //rv.setOnClickFillInIntent(R.id.ingredient_name_tv, fillInIntent);
-
         // Return the RemoteViews object.
         return rv;
     }
@@ -106,7 +94,6 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
     @Override
     public void onDataSetChanged() {
         // Fetching JSON data from server and add them to mIngredients arraylist
-        Log.i(TAG, "onDataSetChanged: " + "entra");
     }
 
     @Override
