@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.ricardo.bakingapp.R;
-import com.example.ricardo.bakingapp.pojos.Recipe;
+import com.example.ricardo.bakingapp.models.Recipe;
 
 import java.util.ArrayList;
 

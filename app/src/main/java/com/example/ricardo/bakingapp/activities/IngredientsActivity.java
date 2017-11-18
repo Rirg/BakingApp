@@ -7,9 +7,9 @@ import android.support.v7.widget.RecyclerView;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.adapters.IngredientsAdapter;
-import com.example.ricardo.bakingapp.pojos.Ingredient;
-import com.example.ricardo.bakingapp.pojos.Recipe;
-import com.example.ricardo.bakingapp.pojos.Step;
+import com.example.ricardo.bakingapp.models.Ingredient;
+import com.example.ricardo.bakingapp.models.Recipe;
+import com.example.ricardo.bakingapp.models.Step;
 import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;
@@ -23,6 +23,8 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients);
+
+        getSupportActionBar().setTitle("Ingredients");
 
         // Create a new ArrayList of Ingredients to inflate the ListView
         ArrayList<Ingredient> ingredients = new ArrayList<>();

@@ -30,7 +30,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="No recipe selected"
+        android:text="@string/widget_no_recipe"
         android:textSize="20sp" />
 
 

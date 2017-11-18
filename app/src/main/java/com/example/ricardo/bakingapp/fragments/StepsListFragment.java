@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.adapters.StepsAdapter;
-import com.example.ricardo.bakingapp.pojos.Step;
+import com.example.ricardo.bakingapp.models.Step;
 
 import java.util.ArrayList;
 

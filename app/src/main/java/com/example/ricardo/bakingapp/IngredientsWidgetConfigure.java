@@ -15,9 +15,9 @@ import android.widget.ListView;
 import android.widget.RemoteViews;
 
 import com.example.ricardo.bakingapp.activities.IngredientsActivity;
-import com.example.ricardo.bakingapp.pojos.Ingredient;
-import com.example.ricardo.bakingapp.pojos.Recipe;
-import com.example.ricardo.bakingapp.pojos.Step;
+import com.example.ricardo.bakingapp.models.Ingredient;
+import com.example.ricardo.bakingapp.models.Recipe;
+import com.example.ricardo.bakingapp.models.Step;
 import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;

@@ -9,7 +9,7 @@ import android.widget.Button;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.fragments.StepDetailFragment;
-import com.example.ricardo.bakingapp.pojos.Step;
+import com.example.ricardo.bakingapp.models.Step;
 
 import java.util.ArrayList;
 

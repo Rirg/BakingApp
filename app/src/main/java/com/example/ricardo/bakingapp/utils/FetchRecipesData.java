@@ -6,9 +6,9 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.ricardo.bakingapp.pojos.Ingredient;
-import com.example.ricardo.bakingapp.pojos.Recipe;
-import com.example.ricardo.bakingapp.pojos.Step;
+import com.example.ricardo.bakingapp.models.Ingredient;
+import com.example.ricardo.bakingapp.models.Recipe;
+import com.example.ricardo.bakingapp.models.Step;
 
 import org.json.JSONArray;
 import org.json.JSONException;

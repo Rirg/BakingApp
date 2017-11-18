@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.adapters.IngredientsAdapter;
-import com.example.ricardo.bakingapp.pojos.Ingredient;
+import com.example.ricardo.bakingapp.models.Ingredient;
 
 import java.util.ArrayList;
 

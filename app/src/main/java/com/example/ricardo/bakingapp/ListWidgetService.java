@@ -8,10 +8,10 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.example.ricardo.bakingapp.activities.MainActivity;
-import com.example.ricardo.bakingapp.pojos.Ingredient;
-import com.example.ricardo.bakingapp.pojos.Recipe;
-import com.example.ricardo.bakingapp.pojos.Step;
+import com.example.ricardo.bakingapp.activities.MenuActivity;
+import com.example.ricardo.bakingapp.models.Ingredient;
+import com.example.ricardo.bakingapp.models.Recipe;
+import com.example.ricardo.bakingapp.models.Step;
 import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
 
         //extras.putInt(IngredientsWidgetProvider.EXTRA_ITEM, position);
 
-        Intent fillInIntent = new Intent(mContext, MainActivity.class);
+        Intent fillInIntent = new Intent(mContext, MenuActivity.class);
         fillInIntent.putExtra("homescreen_meeting", ingredient);
         fillInIntent.putExtras(extras);
 

@@ -10,9 +10,9 @@ import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.fragments.IngredientsFragment;
 import com.example.ricardo.bakingapp.fragments.StepDetailFragment;
 import com.example.ricardo.bakingapp.fragments.StepsListFragment;
-import com.example.ricardo.bakingapp.pojos.Ingredient;
-import com.example.ricardo.bakingapp.pojos.Recipe;
-import com.example.ricardo.bakingapp.pojos.Step;
+import com.example.ricardo.bakingapp.models.Ingredient;
+import com.example.ricardo.bakingapp.models.Recipe;
+import com.example.ricardo.bakingapp.models.Step;
 import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;
