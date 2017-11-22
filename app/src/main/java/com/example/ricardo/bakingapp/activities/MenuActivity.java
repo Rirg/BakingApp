@@ -81,9 +81,8 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
 
         // Fetch data just if the recipes list is null
         if (mRecipes == null) {
-            mIdlingResource = (SimpleIdlingResource) getIdlingResource();
             // Set the idling state to false before start fetching the data
-            mIdlingResource.setIdleState(false);
+            if (mIdlingResource != null) mIdlingResource.setIdleState(false);
             new FetchRecipesData(this, this,
                     FetchRecipesData.RECIPES_CODE, -1).execute();
         }
@@ -102,11 +101,14 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
     public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients,
                                 ArrayList<Step> steps) {
         // Set the idle state of the idling resource to true when the download is completed
-        mIdlingResource.setIdleState(true);
+        if (mIdlingResource != null) mIdlingResource.setIdleState(true);
+
+        // Swap the empty list with the new one
         if (recipes != null) {
             mRecipes = recipes;
             mAdapter.swapList(recipes);
         }
+
     }
 
     @Override
