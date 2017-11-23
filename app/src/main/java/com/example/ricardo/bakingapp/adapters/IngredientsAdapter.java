@@ -12,6 +12,9 @@ import com.example.ricardo.bakingapp.models.Ingredient;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Ricardo on 9/16/17.
  */
@@ -47,16 +50,14 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView ingredient;
-        TextView measure;
-        TextView quantity;
+
+        @BindView(R.id.ingredient_name_tv) TextView ingredient;
+        @BindView(R.id.ingredient_quantity_tv) TextView quantity;
+        @BindView(R.id.ingredient_measure_tv) TextView measure;
 
         public ViewHolder(View itemView) {
-
             super(itemView);
-            ingredient = itemView.findViewById(R.id.ingredient_name_tv);
-            measure = itemView.findViewById(R.id.ingredient_measure_tv);
-            quantity = itemView.findViewById(R.id.ingredient_quantity_tv);
+            ButterKnife.bind(this, itemView);
         }
 
         void bind(int pos) {

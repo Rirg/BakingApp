@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.fragments.IngredientsFragment;
@@ -53,6 +54,14 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
             new FetchRecipesData(this, this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
             new FetchRecipesData(this, this, FetchRecipesData.INGREDIENTS_CODE, mCurrentRecipe.getId()).execute();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return true;
     }
 
     @Override

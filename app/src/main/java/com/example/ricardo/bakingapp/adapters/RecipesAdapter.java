@@ -11,6 +11,9 @@ import com.example.ricardo.bakingapp.models.Recipe;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Ricardo on 9/16/17.
  */
@@ -49,13 +52,12 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView recipeTitle;
+        @BindView(R.id.recipe_name_tv) TextView recipeTitle;
 
         public ViewHolder(View itemView) {
 
             super(itemView);
-            recipeTitle = itemView.findViewById(R.id.recipe_name_tv);
-
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

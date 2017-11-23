@@ -12,6 +12,9 @@ import com.example.ricardo.bakingapp.models.Step;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Ricardo on 9/18/17.
  */
@@ -54,12 +57,12 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView shortDescriptionTv;
+        @BindView(R.id.step_short_description_tv) TextView shortDescriptionTv;
 
          ViewHolder(View itemView) {
             super(itemView);
 
-            shortDescriptionTv = itemView.findViewById(R.id.step_short_description_tv);
+             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

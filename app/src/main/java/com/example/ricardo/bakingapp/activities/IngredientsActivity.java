@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.adapters.IngredientsAdapter;
@@ -52,7 +53,13 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
         recyclerView.setAdapter(mAdapter);
     }
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return true;
+    }
 
     @Override
     protected void onPause() {
