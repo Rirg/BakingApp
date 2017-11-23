@@ -14,7 +14,7 @@
         android:layout_margin="8dp"
         android:background="@drawable/border"
         android:foreground="?attr/selectableItemBackground"
-        android:text="Recipe ingredients"
+        android:text="@string/recipe_ingredients"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <!--Recycler view for the steps-->

@@ -19,7 +19,7 @@
         android:id="@+id/detail_btn_prev"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Previous step"
+        android:text="@string/previous_step"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/detail_btn_next" />
@@ -28,7 +28,7 @@
         android:id="@+id/detail_btn_next"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Next Step"
+        android:text="@string/next_step"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/detail_btn_prev"
         app:layout_constraintRight_toRightOf="parent" />

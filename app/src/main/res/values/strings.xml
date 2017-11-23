@@ -5,5 +5,9 @@
     <string name="widget_no_recipe">No recipe selected</string>
     <string name="ingredient_measure">Measure:</string>
     <string name="ingredient_quantity">Quantity:</string>
+    <string name="previous_step">Previous step</string>
+    <string name="next_step">Next Step</string>
+    <string name="recipe_ingredients">Recipe ingredients</string>
+    <string name="widget_configure_indications">Please select a recipe to display the ingredients:</string>
 
 </resources>

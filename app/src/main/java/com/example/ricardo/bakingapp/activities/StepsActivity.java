@@ -29,7 +29,6 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
     @State
     ArrayList<Ingredient> mIngredients;
 
-    private static final String TAG = "StepsActivity";
     private boolean mTwoPane = false;
 
     @Override
