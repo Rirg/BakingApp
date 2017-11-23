@@ -25,6 +25,8 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
         setContentView(R.layout.activity_ingredients);
 
         getSupportActionBar().setTitle("Ingredients");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         // Create a new ArrayList of Ingredients to inflate the ListView
         ArrayList<Ingredient> ingredients = new ArrayList<>();
@@ -46,9 +48,11 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
         RecyclerView recyclerView = findViewById(R.id.ingredients_rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false));
-        mAdapter = new IngredientsAdapter(ingredients);
+        mAdapter = new IngredientsAdapter(ingredients, this);
         recyclerView.setAdapter(mAdapter);
     }
+
+
 
     @Override
     protected void onPause() {

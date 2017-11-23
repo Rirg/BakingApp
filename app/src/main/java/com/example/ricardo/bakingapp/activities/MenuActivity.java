@@ -73,7 +73,7 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
         return mIdlingResource;
     }
 
-    // Implement this method to fetch after the just onCreate() method and use correctly the idle
+    // Implement this method to fetch just after the onCreate() method and use correctly the idle
     // resource
     @Override
     protected void onStart() {

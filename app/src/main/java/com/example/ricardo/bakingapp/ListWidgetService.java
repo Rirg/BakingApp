@@ -93,7 +93,7 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
 
     @Override
     public void onDataSetChanged() {
-        // Fetching JSON data from server and add them to mIngredients arraylist
+
     }
 
     @Override

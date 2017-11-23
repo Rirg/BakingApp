@@ -3,7 +3,6 @@ package com.example.ricardo.bakingapp;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -20,6 +19,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 /**
@@ -37,23 +37,41 @@ public class MenuActivityTest {
 
     @Before
     public void registerIdlingResource() {
+        // Get the idling resource
         mIdlingResource = mActivityRule.getActivity().getIdlingResource();
 
-        // To prove that the test fails, omit this call:
+        // Register the idling resource before doing any test
         IdlingRegistry.getInstance().register(mIdlingResource);
     }
 
     @Test
-    public void verify_menuDisplayed() {
-        // Check the first item displayed in the menu
+    public void clickMenuItem_OpenStepsList() {
+        // Check that the view with the specified text is displayed
         onView(withText("Nutella Pie")).check(matches(isDisplayed()));
 
         // Click on the first item
-        onView(ViewMatchers.withId(R.id.recipes_list_rv))
+        onView(withId(R.id.recipes_list_rv))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
-        // Check that after the click we get a "Recipe Introduction" item in the list
-        onView(withText("Recipe Introduction")).check(matches(isDisplayed()));
+        // Check that the view with the specified text is displayed
+        onView(withText("Starting prep")).check(matches(isDisplayed()));
+
+    }
+
+    @Test
+    public void clickMenuItem_clickStepItem_OpenStepDetail() {
+        // Click on the first item
+        onView(withId(R.id.recipes_list_rv))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+
+        //onView(withText("Recipe ingredients")).perform(click());
+
+        // Click on the first item
+        onView(withId(R.id.steps_list_rv))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+
+        onView(withId(R.id.step_description_tv)).check(matches(withText("Recipe Introduction")));
+
 
     }
 
@@ -61,6 +79,7 @@ public class MenuActivityTest {
     @After
     public void unregisterIdlingResource() {
         if (mIdlingResource != null) {
+            // Unregister the idling resource after the tests are completed
             IdlingRegistry.getInstance().unregister(mIdlingResource);
         }
     }

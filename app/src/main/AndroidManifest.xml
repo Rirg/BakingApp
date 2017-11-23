@@ -23,11 +23,9 @@
             android:name=".activities.StepsActivity"
             android:parentActivityName=".activities.MenuActivity" />
         <activity
-            android:name=".activities.StepDetailActivity"
-            android:parentActivityName=".activities.MenuActivity" />
+            android:name=".activities.StepDetailActivity"/>
         <activity
             android:name=".activities.IngredientsActivity"
-            android:parentActivityName=".activities.MenuActivity"
             android:launchMode="singleTop"/>
 
         <receiver android:name=".IngredientsWidgetProvider">

@@ -40,6 +40,7 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
         // out of the widget placement if they press the back button.
         setResult(RESULT_CANCELED);
 
+        // Get the shared preferences for saving the selected recipe id and name
         preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
 
         // Get the widget id

@@ -31,7 +31,10 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
 
+        getSupportActionBar().setTitle("Steps");
+
         if (getIntent().hasExtra("recipe")) {
+            // Get the current selected recipe
             mCurrentRecipe = getIntent().getParcelableExtra("recipe");
         }
 
@@ -70,7 +73,7 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
             bundle.putParcelableArrayList("steps", mSteps);
             bundle.putInt("recipeId", mCurrentRecipe.getId());
 
-            // Inflate a new instance of the StepsListFragment using the fragment manager
+            // Add a new instance of the StepsListFragment using the fragment manager
             // to show the steps list.
             StepsListFragment fragment = new StepsListFragment();
             fragment.setArguments(bundle);
@@ -107,6 +110,7 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
     public void onStepSelected(int pos, int id) {
         // Is a step option
         if (id == -1) {
+            // If is two pane, replace the details_container with the new step
             if (mTwoPane) {
                 StepDetailFragment detailFragment = new StepDetailFragment();
 
@@ -116,7 +120,9 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
                         .commit();
 
                 detailFragment.setCurrentStep(mSteps.get(pos));
-            } else {
+            }
+            // Else, use an intent to start the StepDetailActivity
+            else {
                 Intent intent = new Intent(this, StepDetailActivity.class);
                 intent.putExtra("position", pos);
                 intent.putParcelableArrayListExtra("steps", mSteps);
@@ -126,6 +132,7 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
         // Is the ingredients option
         else {
             if (mTwoPane) {
+                // If is two pane, replace the details_container with the IngredientsFragment
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("ingredients", mIngredients);
 
@@ -136,7 +143,9 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
                 manager.beginTransaction()
                         .replace(R.id.details_container, ingredientsFragment)
                         .commit();
-            } else {
+            }
+            // Else, use an intent to start the IngredientsActivity passing the Ingredients ArrayList
+            else {
                 Intent intent = new Intent(this, IngredientsActivity.class);
 
                 // Send the id of the current recipe to the IngredientsActivity

@@ -1,5 +1,6 @@
 package com.example.ricardo.bakingapp.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,11 @@ import java.util.ArrayList;
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder> {
 
     private ArrayList<Ingredient> mIngredients;
+    private Context mContext;
 
-    public IngredientsAdapter(ArrayList<Ingredient> ingredients) {
+    public IngredientsAdapter(ArrayList<Ingredient> ingredients, Context context) {
         mIngredients = ingredients;
+        mContext = context;
     }
 
     @Override
@@ -58,8 +61,8 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
         void bind(int pos) {
             ingredient.setText(mIngredients.get(pos).getName());
-            measure.setText("Measure: " + mIngredients.get(pos).getMeasure());
-            quantity.setText("Quantity: " + String.valueOf(mIngredients.get(pos).getQuantity()));
+            measure.setText(mContext.getString(R.string.ingredient_measure) + mIngredients.get(pos).getMeasure());
+            quantity.setText(mContext.getString(R.string.ingredient_quantity) + String.valueOf(mIngredients.get(pos).getQuantity()));
         }
 
     }

@@ -43,7 +43,7 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
             mCallback = (OnStepSelected) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnImageClickListener");
+                    + " must implement OnStepSelected");
         }
 
     }

@@ -32,7 +32,7 @@ public class IngredientsFragment extends android.support.v4.app.Fragment  {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
 
-        IngredientsAdapter adapter = new IngredientsAdapter(ingredients);
+        IngredientsAdapter adapter = new IngredientsAdapter(ingredients, getContext());
         recyclerView.setAdapter(adapter);
 
 
