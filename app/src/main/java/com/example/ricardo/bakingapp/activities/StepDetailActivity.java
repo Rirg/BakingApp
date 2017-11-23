@@ -14,10 +14,13 @@ import com.example.ricardo.bakingapp.models.Step;
 
 import java.util.ArrayList;
 
+import icepick.Icepick;
+import icepick.State;
+
 public class StepDetailActivity extends AppCompatActivity {
 
-    private int mPos;
-    private ArrayList<Step> mSteps;
+    @State int mPos;
+    @State ArrayList<Step> mSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +31,13 @@ public class StepDetailActivity extends AppCompatActivity {
         Bundle intentBundle = getIntent().getExtras();
 
         // Get the steps and the position from the intent
-        mSteps = intentBundle.getParcelableArrayList("steps");
-        mPos = intentBundle.getInt("position");
+        if (intentBundle != null) {
+            mSteps = intentBundle.getParcelableArrayList("steps");
+            mPos = intentBundle.getInt("position");
+        }
+
+        // Restore state using Icepick
+        Icepick.restoreInstanceState(this, savedInstanceState);
 
         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -112,6 +120,13 @@ public class StepDetailActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save state using Icepick
+        Icepick.saveInstanceState(this, outState);
     }
 
     @Override

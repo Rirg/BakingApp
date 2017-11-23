@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,9 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
+import icepick.Icepick;
+import icepick.State;
+
 
 public class StepDetailFragment extends Fragment {
 
@@ -43,10 +45,10 @@ public class StepDetailFragment extends Fragment {
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private Uri mVideoUri;
-    private long mPlayerPos = C.TIME_UNSET;
+    @State long mPlayerPos = C.TIME_UNSET;
 
     /* Variables to hold the current and all the steps in the recipe */
-    private Step mCurrentStep;
+    @State Step mCurrentStep;
     private ArrayList<Step> mSteps;
 
     private static final String TAG = "StepDetailFragment";
@@ -61,13 +63,8 @@ public class StepDetailFragment extends Fragment {
         mPlayerView = rootView.findViewById(R.id.detail_exo_player);
         TextView descriptionTv = rootView.findViewById(R.id.step_description_tv);
 
-        // Check if the savedInstanceState bundle isn't null
-        if (savedInstanceState != null) {
-            // Get the current step
-            mCurrentStep = savedInstanceState.getParcelable("step");
-            mPlayerPos = savedInstanceState.getLong("playerPos", C.TIME_UNSET);
-            Log.i(TAG, "onCreateView: " + mPlayerPos);
-        }
+        // Restore state using Icepick
+        Icepick.restoreInstanceState(this, savedInstanceState);
 
         // Get all the steps and the current step based on the position if the mCurrentStep variable
         // is null
@@ -126,8 +123,7 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong("playerPos", mPlayerPos);
-        outState.putParcelable("step", mCurrentStep);
+        Icepick.saveInstanceState(this, outState);
     }
 
 

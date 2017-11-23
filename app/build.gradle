@@ -48,10 +48,9 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-contrib:3.0.1'
 
     // Icepick
-//    compile "frankiesardo:icepick-processor:3.2.0"
-//    compile "frankiesardo:icepick:3.2.0"
-//    provided 'frankiesardo:icepick-processor:3.2.0'
-//    annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
+    compile "frankiesardo:icepick:3.2.0"
+    provided 'frankiesardo:icepick-processor:3.2.0'
+    annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 
     //Butterknife
     compile 'com.jakewharton:butterknife:8.4.0'

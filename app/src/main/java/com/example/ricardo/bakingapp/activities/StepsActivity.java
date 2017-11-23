@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.ricardo.bakingapp.R;
@@ -18,11 +17,17 @@ import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;
 
-public class StepsActivity extends AppCompatActivity implements FetchRecipesData.OnTaskCompleted, StepsListFragment.OnStepSelected {
+import icepick.Icepick;
+import icepick.State;
+
+public class StepsActivity extends AppCompatActivity implements FetchRecipesData.OnTaskCompleted,
+        StepsListFragment.OnStepSelected {
 
     private Recipe mCurrentRecipe;
-    private ArrayList<Step> mSteps;
-    private ArrayList<Ingredient> mIngredients;
+    @State
+    ArrayList<Step> mSteps;
+    @State
+    ArrayList<Ingredient> mIngredients;
 
     private static final String TAG = "StepsActivity";
     private boolean mTwoPane = false;
@@ -39,16 +44,12 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
             mCurrentRecipe = getIntent().getParcelableExtra("recipe");
         }
 
-        Log.i(TAG, "onCreate: " + mCurrentRecipe.getName());
-
         // Check if is two pane or single
         if (findViewById(R.id.details_container) != null) mTwoPane = true;
 
-        // Retrieve the step list and ingredients list from the bundle if there is
-        if (savedInstanceState != null) {
-            mSteps = savedInstanceState.getParcelableArrayList("steps");
-            mIngredients = savedInstanceState.getParcelableArrayList("ingredients");
-        }
+        // Restore the state using Icepick
+        Icepick.restoreInstanceState(this, savedInstanceState);
+
         // Fetch the steps and ingredients just if we have null list
         if (mSteps == null || mIngredients == null) {
             new FetchRecipesData(this, this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
@@ -111,12 +112,12 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("steps", mSteps);
-        outState.putParcelableArrayList("ingredients", mIngredients);
+        Icepick.saveInstanceState(this, outState);
     }
 
     @Override
     public void onStepSelected(int pos, int id) {
+        // TODO fix overexposed fragments "Recipe introduction"
         // Is a step option
         if (id == -1) {
             // If is two pane, replace the details_container with the new step

@@ -21,11 +21,14 @@ import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;
 
+import icepick.Icepick;
+import icepick.State;
+
 public class MenuActivity extends AppCompatActivity implements RecipesAdapter.ListItemClickListener,
         FetchRecipesData.OnTaskCompleted {
 
     private RecipesAdapter mAdapter;
-    private ArrayList<Recipe> mRecipes;
+    @State ArrayList<Recipe> mRecipes;
 
     @Nullable
     private SimpleIdlingResource mIdlingResource;
@@ -35,9 +38,11 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Check the bundle to retrieve the list if there is one
+        // Restore the state using Icepick
+        Icepick.restoreInstanceState(this, savedInstanceState);
+
+        // If the ArrayList is not null, then pass it the a new instance of the adapter
         if (savedInstanceState != null) {
-            mRecipes = savedInstanceState.getParcelableArrayList("recipes");
             mAdapter = new RecipesAdapter(mRecipes, this);
         }
         // Else, just send an empty list and swap the list later in the onTaskCompleted callback
@@ -114,7 +119,7 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("recipes", mRecipes);
+        Icepick.saveInstanceState(this, outState);
 
     }
 }
