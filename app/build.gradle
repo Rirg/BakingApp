@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-// Butterknife
+// ButterKnife
 apply plugin: 'com.jakewharton.butterknife'
 
 android {
@@ -52,7 +52,7 @@ dependencies {
     provided 'frankiesardo:icepick-processor:3.2.0'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 
-    //Butterknife
+    //ButterKnife
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }

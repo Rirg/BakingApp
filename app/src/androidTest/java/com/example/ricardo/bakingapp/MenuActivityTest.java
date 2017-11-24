@@ -64,8 +64,6 @@ public class MenuActivityTest {
         onView(withId(R.id.recipes_list_rv))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
-        //onView(withText("Recipe ingredients")).perform(click());
-
         // Click on the first item
         onView(withId(R.id.steps_list_rv))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));

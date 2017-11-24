@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.example.ricardo.bakingapp.models.Ingredient;
 import com.example.ricardo.bakingapp.models.Recipe;
@@ -118,7 +117,6 @@ public class FetchRecipesData extends AsyncTask<Void, Void, String> {
                                 object.getString("name"),
                                 object.getInt("servings"),
                                 object.getString("image")));
-                        Log.i(TAG, "fetchFromJson: " + object.getString("name"));
                     }
                     // Send the array with the results using the callback
                     mCallback.onTaskCompleted(recipes, null, null);
@@ -147,7 +145,6 @@ public class FetchRecipesData extends AsyncTask<Void, Void, String> {
                                         currentIngredient.getString("ingredient")));
                             }
                         }
-                        Log.i(TAG, "fetchFromJson: " + object.getString("name"));
                         // Send the array with the results using the callback
                         mCallback.onTaskCompleted(null, ingredients, null);
                     }

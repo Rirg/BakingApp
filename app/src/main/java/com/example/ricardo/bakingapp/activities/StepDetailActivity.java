@@ -19,8 +19,11 @@ import icepick.State;
 
 public class StepDetailActivity extends AppCompatActivity {
 
-    @State int mPos;
-    @State ArrayList<Step> mSteps;
+    @State
+    int mPos;
+
+    @State
+    ArrayList<Step> mSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +31,8 @@ public class StepDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_step_detail);
 
-        Bundle intentBundle = getIntent().getExtras();
-
         // Get the steps and the position from the intent
+        Bundle intentBundle = getIntent().getExtras();
         if (intentBundle != null) {
             mSteps = intentBundle.getParcelableArrayList("steps");
             mPos = intentBundle.getInt("position");
@@ -39,7 +41,9 @@ public class StepDetailActivity extends AppCompatActivity {
         // Restore state using Icepick
         Icepick.restoreInstanceState(this, savedInstanceState);
 
+        // Set the title of the ActionBar to be the short description of the Step
         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -55,19 +59,22 @@ public class StepDetailActivity extends AppCompatActivity {
             btnNext.setVisibility(View.GONE);
         }
 
-        // Create a new instance of the StepDetailFragment and set arguments with extras in a bundle
-        // the steps and current position
-        StepDetailFragment detailFragment = new StepDetailFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("steps", mSteps);
-        bundle.putInt("pos", mPos);
+        // Prevent adding the fragment twice if there is a saved instance state
+        if (savedInstanceState == null) {
+            // Create a new instance of the StepDetailFragment and set arguments with extras in a bundle
+            // the steps and current position
+            StepDetailFragment detailFragment = new StepDetailFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("steps", mSteps);
+            bundle.putInt("pos", mPos);
 
-        detailFragment.setArguments(bundle);
+            detailFragment.setArguments(bundle);
 
-        // Add the StepDetailFragment
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.details_container, detailFragment)
-                .commit();
+            // Add the StepDetailFragment
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.details_container, detailFragment)
+                    .commit();
+        }
 
 
         // Check that the buttons aren't null to proceed
@@ -78,15 +85,15 @@ public class StepDetailActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     // Check if the position is greater than 0
                     if (mPos > 0) {
-                        // Check if the position is less than the steps size
+                        // Decrease the position by 1 every time the user clicks the previous button
+                        mPos--;
+
                         StepDetailFragment newDetailFragment = new StepDetailFragment();
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.details_container, newDetailFragment)
                                 .commit();
-                        // Decrease the position by 1 every time the user clicks the previous button
-                        mPos--;
 
-                        // Change the title of the action bar
+                        // Change the title of the action bar to the current step
                         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());
 
                         // Call the method setCurrentStep() passing the current step
@@ -101,13 +108,15 @@ public class StepDetailActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     // Check if the position is less than the steps size
                     if (mPos < mSteps.size() - 1) {
+
+                        // Increase the position by 1 every time the user clicks the next button
+                        mPos++;
+
                         // Replace the previous StepDetailFragment with the new step
                         StepDetailFragment newDetailFragment = new StepDetailFragment();
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.details_container, newDetailFragment)
                                 .commit();
-                        // Increase the position by 1 every time the user clicks the next button
-                        mPos++;
 
                         // Change the title of the action bar
                         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());

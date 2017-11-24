@@ -25,7 +25,9 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients);
 
+        // Set the title of the action bar
         getSupportActionBar().setTitle("Ingredients");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -55,6 +57,7 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Finish the activity when the back button is pressed
         if (item.getItemId() == android.R.id.home) {
             finish();
         }

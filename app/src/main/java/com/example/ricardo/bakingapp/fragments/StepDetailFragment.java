@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,12 +45,11 @@ public class StepDetailFragment extends Fragment {
     private SimpleExoPlayerView mPlayerView;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private Uri mVideoUri;
     @State long mPlayerPos = C.TIME_UNSET;
 
     /* Variables to hold the current and all the steps in the recipe */
     @State Step mCurrentStep;
-    private ArrayList<Step> mSteps;
+    @State ArrayList<Step> mSteps;
 
     private static final String TAG = "StepDetailFragment";
 
@@ -65,6 +65,8 @@ public class StepDetailFragment extends Fragment {
 
         // Restore state using Icepick
         Icepick.restoreInstanceState(this, savedInstanceState);
+        Log.i(TAG, "onCreateView: unset " + C.TIME_UNSET);
+        Log.i(TAG, "onCreateView: si agarra " +mPlayerPos );
 
         // Get all the steps and the current step based on the position if the mCurrentStep variable
         // is null
@@ -72,57 +74,42 @@ public class StepDetailFragment extends Fragment {
             Bundle extras = getArguments();
             if (extras != null && extras.getParcelableArrayList("steps") != null) {
                 mSteps = extras.getParcelableArrayList("steps");
-                // Set as default the first step
                 mCurrentStep = mSteps.get(extras.getInt("pos"));
 
             }
         }
-
-        // Check the current step and the description text view to set the description if it's in
-        // portrait orientation
-        if (mCurrentStep != null && descriptionTv != null) {
-            descriptionTv.setText(mCurrentStep.getDescription());
+        if (mCurrentStep != null){
+            // Set the description text if the view isn't null
+            if (descriptionTv != null) descriptionTv.setText(mCurrentStep.getDescription());
         }
-
-        if(mCurrentStep != null) {
-            mVideoUri = Uri.parse(mCurrentStep.getVideoUrl());
-            // Initialize the Media Session and the Player
-//            initializeMediaSession();
-//            initializePlayer(mVideoUri);
-        }
-
 
         return rootView;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        // Save the current position of the player before releasing it
-        if (mExoPlayer != null) {
-            mPlayerPos = mExoPlayer.getCurrentPosition();
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        if (mVideoUri != null) {
-            initializePlayer(mVideoUri);
-            initializeMediaSession();
-        }
+        Log.i(TAG, "onResume: ");
+          if (mCurrentStep != null) {
+              initializeMediaSession();
+              initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
+          }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        releasePlayer();
-        mMediaSession.setActive(false);
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause: ");
+        if (mExoPlayer != null) {
+            mPlayerPos = mExoPlayer.getCurrentPosition();
+            releasePlayer();
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.i(TAG, "onSaveInstanceState: " +mPlayerPos);
         Icepick.saveInstanceState(this, outState);
     }
 
@@ -197,7 +184,6 @@ public class StepDetailFragment extends Fragment {
 
     }
 
-
     /**
      * Media Session Callbacks, where all external clients control the player.
      */
@@ -231,5 +217,4 @@ public class StepDetailFragment extends Fragment {
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
-
 }

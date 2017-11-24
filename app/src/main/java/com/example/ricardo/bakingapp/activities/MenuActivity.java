@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.ricardo.bakingapp.IdlingResource.SimpleIdlingResource;
 import com.example.ricardo.bakingapp.R;
@@ -21,6 +24,8 @@ import com.example.ricardo.bakingapp.utils.FetchRecipesData;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import icepick.Icepick;
 import icepick.State;
 
@@ -28,7 +33,14 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
         FetchRecipesData.OnTaskCompleted {
 
     private RecipesAdapter mAdapter;
-    @State ArrayList<Recipe> mRecipes;
+    @State
+    ArrayList<Recipe> mRecipes;
+
+    @BindView(R.id.loading_indicator)
+    ProgressBar mProgressBar;
+
+    @BindView(R.id.error_message_tv)
+    TextView mErrorMessage;
 
     @Nullable
     private SimpleIdlingResource mIdlingResource;
@@ -37,6 +49,8 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ButterKnife.bind(this);
 
         // Restore the state using Icepick
         Icepick.restoreInstanceState(this, savedInstanceState);
@@ -53,7 +67,7 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
         RecyclerView recyclerView;
         // Check if is a tablet or cellphone
         if (findViewById(R.id.recipes_grid_rv) != null) {
-            recyclerView =  findViewById(R.id.recipes_grid_rv);
+            recyclerView = findViewById(R.id.recipes_grid_rv);
             recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         } else {
             recyclerView = findViewById(R.id.recipes_list_rv);
@@ -88,6 +102,7 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
         if (mRecipes == null) {
             // Set the idling state to false before start fetching the data
             if (mIdlingResource != null) mIdlingResource.setIdleState(false);
+            mProgressBar.setVisibility(View.VISIBLE);
             new FetchRecipesData(this, this,
                     FetchRecipesData.RECIPES_CODE, -1).execute();
         }
@@ -105,13 +120,20 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
     @Override
     public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients,
                                 ArrayList<Step> steps) {
+        mProgressBar.setVisibility(View.INVISIBLE);
         // Set the idle state of the idling resource to true when the download is completed
         if (mIdlingResource != null) mIdlingResource.setIdleState(true);
 
         // Swap the empty list with the new one
         if (recipes != null) {
+            // Hide the error message
+            mErrorMessage.setVisibility(View.INVISIBLE);
+            // Save the fetched data and swap the list
             mRecipes = recipes;
             mAdapter.swapList(recipes);
+        } else {
+            // Show the error message
+            mErrorMessage.setVisibility(View.VISIBLE);
         }
 
     }

@@ -9,5 +9,6 @@
     <string name="next_step">Next Step</string>
     <string name="recipe_ingredients">Recipe ingredients</string>
     <string name="widget_configure_indications">Please select a recipe to display the ingredients:</string>
+    <string name="error_no_network">Please check your internet connection</string>
 
 </resources>

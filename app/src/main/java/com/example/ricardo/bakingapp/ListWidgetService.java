@@ -3,12 +3,9 @@ package com.example.ricardo.bakingapp;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.example.ricardo.bakingapp.activities.MenuActivity;
 import com.example.ricardo.bakingapp.models.Ingredient;
 import com.example.ricardo.bakingapp.models.Recipe;
 import com.example.ricardo.bakingapp.models.Step;
@@ -29,7 +26,6 @@ public class ListWidgetService extends RemoteViewsService {
 }
 
 class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, FetchRecipesData.OnTaskCompleted {
-    private static final String TAG = "ListRemoteViewsFactory";
     private Context mContext;
     private ArrayList<String> mIngredients;
     private int mAppWidgetId;
@@ -52,7 +48,6 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
         mIngredients = new ArrayList<>();
-        Log.i(TAG, "onCreate: " + "entra al oncreate");
         new FetchRecipesData(mContext, this, FetchRecipesData.INGREDIENTS_CODE, mRecipeId).execute();
     }
 
@@ -69,17 +64,6 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
         // feed row
         String ingredient = mIngredients.get(position);
         rv.setTextViewText(R.id.widget_ingredient_name_tv, ingredient);
-
-        // end feed row
-        // Next, set a fill-intent, which will be used to fill in the pending intent template
-        // that is set on the collection view in ListViewWidgetProvider.
-        Bundle extras = new Bundle();
-
-        //extras.putInt(IngredientsWidgetProvider.EXTRA_ITEM, position);
-
-        Intent fillInIntent = new Intent(mContext, MenuActivity.class);
-        fillInIntent.putExtra("homescreen_meeting", ingredient);
-        fillInIntent.putExtras(extras);
 
         // Return the RemoteViews object.
         return rv;
