@@ -14,8 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.models.Step;
 import com.google.android.exoplayer2.C;
@@ -46,6 +48,7 @@ public class StepDetailFragment extends Fragment {
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     @State long mPlayerPos = C.TIME_UNSET;
+    private ImageView mThumbnailImageView;
 
     /* Variables to hold the current and all the steps in the recipe */
     @State Step mCurrentStep;
@@ -61,12 +64,11 @@ public class StepDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
 
         mPlayerView = rootView.findViewById(R.id.detail_exo_player);
+        mThumbnailImageView = rootView.findViewById(R.id.thumbnail_image_view);
         TextView descriptionTv = rootView.findViewById(R.id.step_description_tv);
 
         // Restore state using Icepick
         Icepick.restoreInstanceState(this, savedInstanceState);
-        Log.i(TAG, "onCreateView: unset " + C.TIME_UNSET);
-        Log.i(TAG, "onCreateView: si agarra " +mPlayerPos );
 
         // Get all the steps and the current step based on the position if the mCurrentStep variable
         // is null
@@ -82,24 +84,37 @@ public class StepDetailFragment extends Fragment {
             // Set the description text if the view isn't null
             if (descriptionTv != null) descriptionTv.setText(mCurrentStep.getDescription());
         }
-
         return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.i(TAG, "onResume: ");
           if (mCurrentStep != null) {
-              initializeMediaSession();
-              initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
+              // If there is a video url available, hide ImageView and initialize the player
+              if (mCurrentStep.getVideoUrl() != null && !mCurrentStep.getVideoUrl().isEmpty()) {
+                  mThumbnailImageView.setVisibility(View.GONE);
+                  initializeMediaSession();
+                  initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
+              }
+              // If there is an image url available, hide the SimpleExoPlayerView and load the image using Glide
+              else if (mCurrentStep.getThumbnailURL() != null && !mCurrentStep.getThumbnailURL().isEmpty()){
+                  mPlayerView.setVisibility(View.GONE);
+                  Glide.with(this)
+                          .load(mCurrentStep.getThumbnailURL())
+                          .into(mThumbnailImageView);
+              }
+              // Else, there is nothing to show, hide ImageView and SimpleExoPlayerView
+              else {
+                  mPlayerView.setVisibility(View.GONE);
+                  mThumbnailImageView.setVisibility(View.GONE);
+              }
           }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause: ");
         if (mExoPlayer != null) {
             mPlayerPos = mExoPlayer.getCurrentPosition();
             releasePlayer();
@@ -109,7 +124,6 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.i(TAG, "onSaveInstanceState: " +mPlayerPos);
         Icepick.saveInstanceState(this, outState);
     }
 

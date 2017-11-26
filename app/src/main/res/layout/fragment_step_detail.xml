@@ -10,11 +10,15 @@
     <!-- Container to prevent the SimpleExoPlayerView expand in the entire screen -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4.5">
+        android:layout_height="wrap_content">
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView
             android:id="@+id/detail_exo_player"
+            android:layout_width="match_parent"
+            android:layout_height="220dp" />
+
+        <ImageView
+            android:id="@+id/thumbnail_image_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </FrameLayout>
@@ -22,8 +26,7 @@
     <TextView
         android:id="@+id/step_description_tv"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5.5"
+        android:layout_height="wrap_content"
         android:padding="12dp"
         android:textColor="#000"
         android:textSize="20sp"

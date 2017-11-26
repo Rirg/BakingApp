@@ -38,8 +38,6 @@ public class StepDetailActivity extends AppCompatActivity {
             mPos = intentBundle.getInt("position");
         }
 
-        // Restore state using Icepick
-        Icepick.restoreInstanceState(this, savedInstanceState);
 
         // Set the title of the ActionBar to be the short description of the Step
         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());
@@ -127,8 +125,6 @@ public class StepDetailActivity extends AppCompatActivity {
                 }
             });
         }
-
-
     }
 
     @Override
