@@ -31,11 +31,18 @@ public class StepDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_step_detail);
 
-        // Get the steps and the position from the intent
-        Bundle intentBundle = getIntent().getExtras();
-        if (intentBundle != null) {
-            mSteps = intentBundle.getParcelableArrayList("steps");
-            mPos = intentBundle.getInt("position");
+        // If there is a saved instance state, restore using Icepick
+        if (savedInstanceState != null)  {
+            Icepick.restoreInstanceState(this, savedInstanceState);
+        }
+        // Else, get the extras from the intent
+        else {
+            // Get the steps and the position from the intent
+            Bundle intentBundle = getIntent().getExtras();
+            if (intentBundle != null) {
+                mSteps = intentBundle.getParcelableArrayList("steps");
+                mPos = intentBundle.getInt("position");
+            }
         }
 
 
@@ -49,12 +56,14 @@ public class StepDetailActivity extends AppCompatActivity {
         Button btnPrev = findViewById(R.id.detail_btn_prev);
         Button btnNext = findViewById(R.id.detail_btn_next);
 
-        // Set the video in fullscreen when the device is in landscape
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getSupportActionBar().hide();
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            btnPrev.setVisibility(View.GONE);
-            btnNext.setVisibility(View.GONE);
+        // Set the video in fullscreen when the device is in landscape if there is a video url available
+        if (mSteps.get(mPos).getVideoUrl() != null && !mSteps.get(mPos).getVideoUrl().isEmpty()) {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                getSupportActionBar().hide();
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                btnPrev.setVisibility(View.GONE);
+                btnNext.setVisibility(View.GONE);
+            }
         }
 
         // Prevent adding the fragment twice if there is a saved instance state

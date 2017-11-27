@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.exoplayer2.ui.SimpleExoPlayerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/detail_exo_player"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/detail_exo_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/step_description_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:textColor="#000"
+        android:textSize="20sp"
+        tools:text="2. Whisk the graham cracker crumbs, 50 grams (1/4 cup) of sugar, and 1/2
+        teaspoon of salt together in a medium bowl. Pour the melted butter and 1 teaspoon of vanilla
+         into the dry ingredients and stir together until evenly mixed." />
+
+
+</FrameLayout>

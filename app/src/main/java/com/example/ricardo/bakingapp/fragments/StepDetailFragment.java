@@ -93,13 +93,16 @@ public class StepDetailFragment extends Fragment {
           if (mCurrentStep != null) {
               // If there is a video url available, hide ImageView and initialize the player
               if (mCurrentStep.getVideoUrl() != null && !mCurrentStep.getVideoUrl().isEmpty()) {
-                  mThumbnailImageView.setVisibility(View.GONE);
+                  if (mThumbnailImageView != null) mThumbnailImageView.setVisibility(View.GONE);
+                  mPlayerView.setVisibility(View.VISIBLE);
                   initializeMediaSession();
                   initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
               }
               // If there is an image url available, hide the SimpleExoPlayerView and load the image using Glide
-              else if (mCurrentStep.getThumbnailURL() != null && !mCurrentStep.getThumbnailURL().isEmpty()){
+              else if (mCurrentStep.getThumbnailURL() != null && !mCurrentStep.getThumbnailURL().isEmpty()
+                      && mThumbnailImageView != null) {
                   mPlayerView.setVisibility(View.GONE);
+                  mThumbnailImageView.setVisibility(View.VISIBLE);
                   Glide.with(this)
                           .load(mCurrentStep.getThumbnailURL())
                           .into(mThumbnailImageView);
@@ -107,7 +110,7 @@ public class StepDetailFragment extends Fragment {
               // Else, there is nothing to show, hide ImageView and SimpleExoPlayerView
               else {
                   mPlayerView.setVisibility(View.GONE);
-                  mThumbnailImageView.setVisibility(View.GONE);
+                  if (mThumbnailImageView != null) mThumbnailImageView.setVisibility(View.GONE);
               }
           }
     }
@@ -126,7 +129,6 @@ public class StepDetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
     }
-
 
     public void setCurrentStep(Step currentStep) {
         mCurrentStep = currentStep;
