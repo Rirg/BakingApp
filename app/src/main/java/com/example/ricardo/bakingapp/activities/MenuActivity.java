@@ -1,6 +1,9 @@
 package com.example.ricardo.bakingapp.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,20 +20,22 @@ import android.widget.TextView;
 import com.example.ricardo.bakingapp.IdlingResource.SimpleIdlingResource;
 import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.adapters.RecipesAdapter;
-import com.example.ricardo.bakingapp.models.Ingredient;
 import com.example.ricardo.bakingapp.models.Recipe;
-import com.example.ricardo.bakingapp.models.Step;
-import com.example.ricardo.bakingapp.utils.FetchRecipesData;
+import com.example.ricardo.bakingapp.utils.ApiService;
+import com.example.ricardo.bakingapp.utils.RetroClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.Icepick;
 import icepick.State;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class MenuActivity extends AppCompatActivity implements RecipesAdapter.ListItemClickListener,
-        FetchRecipesData.OnTaskCompleted {
+public class MenuActivity extends AppCompatActivity implements RecipesAdapter.ListItemClickListener, Callback<List<Recipe>> {
 
     private RecipesAdapter mAdapter;
     @State
@@ -48,7 +53,7 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_menu);
 
         ButterKnife.bind(this);
 
@@ -61,7 +66,8 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
         }
         // Else, just send an empty list and swap the list later in the onTaskCompleted callback
         else {
-            mAdapter = new RecipesAdapter(new ArrayList<Recipe>(), this);
+            mRecipes = new ArrayList<>();
+            mAdapter = new RecipesAdapter(mRecipes, this);
         }
 
         RecyclerView recyclerView;
@@ -98,15 +104,25 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
     protected void onStart() {
         super.onStart();
 
-        // Fetch data just if the recipes list is null
-        if (mRecipes == null) {
+        // Fetch data just if the recipes list is null or empty
+        if (mRecipes == null || mRecipes.size() == 0) {
             // Set the idling state to false before start fetching the data
             if (mIdlingResource != null) mIdlingResource.setIdleState(false);
-            mProgressBar.setVisibility(View.VISIBLE);
-            new FetchRecipesData(this, this,
-                    FetchRecipesData.RECIPES_CODE, -1).execute();
-        }
 
+            // Show the progress bar
+            mProgressBar.setVisibility(View.VISIBLE);
+
+            // Check the internet connection
+            if (isOnline(this)) {
+                // Use retrofit to fetch data
+                ApiService api = RetroClient.getApiService();
+                Call<List<Recipe>> call = api.getAllRecipesData();
+                call.enqueue(this);
+            } else {
+                // Show an error message if there isn't internet connection
+                mErrorMessage.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
@@ -118,30 +134,47 @@ public class MenuActivity extends AppCompatActivity implements RecipesAdapter.Li
     }
 
     @Override
-    public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients,
-                                ArrayList<Step> steps) {
-        mProgressBar.setVisibility(View.INVISIBLE);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
+
+    }
+
+    @Override
+    public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
         // Set the idle state of the idling resource to true when the download is completed
         if (mIdlingResource != null) mIdlingResource.setIdleState(true);
 
-        // Swap the empty list with the new one
-        if (recipes != null) {
-            // Hide the error message
+        // Hide the progress bar
+        mProgressBar.setVisibility(View.INVISIBLE);
+
+        if (response.isSuccessful()) {
+            // Hide the error message if the response is successful
             mErrorMessage.setVisibility(View.INVISIBLE);
-            // Save the fetched data and swap the list
-            mRecipes = recipes;
-            mAdapter.swapList(recipes);
+
+            // Add all the recipe list from the response to the recipe list from the adapter
+            mRecipes.addAll(response.body());
+            mAdapter.notifyDataSetChanged();
         } else {
-            // Show the error message
+            // Show the error message if the response wasn't successful
             mErrorMessage.setVisibility(View.VISIBLE);
         }
 
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+    public void onFailure(Call<List<Recipe>> call, Throwable t) {
+        // Set the idle state of the idling resource to true when the download is completed
+        if (mIdlingResource != null) mIdlingResource.setIdleState(true);
 
+        // Hide the progress bar and show an error message
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

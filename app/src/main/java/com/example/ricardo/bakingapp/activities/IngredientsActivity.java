@@ -10,15 +10,22 @@ import com.example.ricardo.bakingapp.R;
 import com.example.ricardo.bakingapp.adapters.IngredientsAdapter;
 import com.example.ricardo.bakingapp.models.Ingredient;
 import com.example.ricardo.bakingapp.models.Recipe;
-import com.example.ricardo.bakingapp.models.Step;
-import com.example.ricardo.bakingapp.utils.FetchRecipesData;
+import com.example.ricardo.bakingapp.utils.ApiService;
+import com.example.ricardo.bakingapp.utils.RetroClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class IngredientsActivity extends AppCompatActivity implements FetchRecipesData.OnTaskCompleted {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class IngredientsActivity extends AppCompatActivity implements Callback<List<Recipe>> {
 
     // Make the adapter a global variable to swap the list when the fetch is complete
     private IngredientsAdapter mAdapter;
+    private int mRecipeId;
+    private ArrayList<Ingredient> mIngredients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,22 +34,28 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
 
         // Set the title of the action bar
         getSupportActionBar().setTitle("Ingredients");
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         // Create a new ArrayList of Ingredients to inflate the ListView
-        ArrayList<Ingredient> ingredients = new ArrayList<>();
+        mIngredients = new ArrayList<>();
 
         // Get the extras from the intent in a bundle variable
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (getIntent().hasExtra("ingredients")) {
-                ingredients = extras.getParcelableArrayList("ingredients");
-            } else if (getIntent().hasExtra("recipeId")) {
-                // Fetch new data to get the ingredients of the corresponding recipe id
-                new FetchRecipesData(this, this, FetchRecipesData.INGREDIENTS_CODE,
-                        extras.getInt("recipeId")).execute();
+                // Get the ingredients list from the StepsActivity, no need to fetch data again
+                mIngredients = extras.getParcelableArrayList("ingredients");
+            }
+            // This is launched by the widget and is needed to fetch the data here
+            else if (getIntent().hasExtra("recipeId")) {
+                // Get the recipe id
+                mRecipeId = extras.getInt("recipeId");
+
+                // Use retrofit to fetch data
+                ApiService api = RetroClient.getApiService();
+                Call<List<Recipe>> call = api.getAllRecipesData();
+                call.enqueue(this);
             }
         }
 
@@ -51,7 +64,7 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
         RecyclerView recyclerView = findViewById(R.id.ingredients_rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false));
-        mAdapter = new IngredientsAdapter(ingredients, this);
+        mAdapter = new IngredientsAdapter(mIngredients, this);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -73,7 +86,23 @@ public class IngredientsActivity extends AppCompatActivity implements FetchRecip
     }
 
     @Override
-    public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients, ArrayList<Step> steps) {
-        if (ingredients != null) mAdapter.swapList(ingredients);
+    public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+        if (response.isSuccessful()) {
+            // Loop on the entire list of recipes and find the one with the specified id
+            for (Recipe recipe : response.body()) {
+                if (recipe.getId().equals(mRecipeId)) {
+                    // Add all the ingredients to the adapter list
+                    mIngredients.addAll(recipe.getIngredients());
+                }
+            }
+            // Notify the adapter
+            mAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    @Override
+    public void onFailure(Call<List<Recipe>> call, Throwable t) {
+        // There was an error
     }
 }

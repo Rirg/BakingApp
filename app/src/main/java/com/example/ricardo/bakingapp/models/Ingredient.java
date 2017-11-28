@@ -3,28 +3,39 @@ package com.example.ricardo.bakingapp.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Ricardo on 9/18/17.
  */
 
 public class Ingredient implements Parcelable {
 
-    private double quantity;
+    @SerializedName("quantity")
+    @Expose
+    private Double quantity;
+    @SerializedName("measure")
+    @Expose
     private String measure;
-    private String name;
+    @SerializedName("ingredient")
+    @Expose
+    private String ingredient;
 
-    public Ingredient() {}
-
-    public Ingredient(double quantity, String measure, String name) {
+    public Ingredient(Double quantity, String measure, String ingredient) {
         this.quantity = quantity;
         this.measure = measure;
-        this.name = name;
+        this.ingredient = ingredient;
     }
 
     protected Ingredient(Parcel in) {
-        quantity = in.readDouble();
+        if (in.readByte() == 0) {
+            quantity = null;
+        } else {
+            quantity = in.readDouble();
+        }
         measure = in.readString();
-        name = in.readString();
+        ingredient = in.readString();
     }
 
     public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
@@ -39,20 +50,12 @@ public class Ingredient implements Parcelable {
         }
     };
 
-    public double getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getMeasure() {
@@ -63,6 +66,14 @@ public class Ingredient implements Parcelable {
         this.measure = measure;
     }
 
+    public String getIngredient() {
+        return ingredient;
+    }
+
+    public void setIngredient(String ingredient) {
+        this.ingredient = ingredient;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -70,8 +81,13 @@ public class Ingredient implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeDouble(quantity);
+        if (quantity == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeDouble(quantity);
+        }
         parcel.writeString(measure);
-        parcel.writeString(name);
+        parcel.writeString(ingredient);
     }
 }

@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 
 public class StepsListFragment extends Fragment implements StepsAdapter.ListItemClickListener {
 
-    private static final String TAG = "StepsListFragment";
 
     private OnStepSelected mCallback;
     private int mId;
@@ -84,7 +82,6 @@ public class StepsListFragment extends Fragment implements StepsAdapter.ListItem
 
     @Override
     public void onListItemClickListener(int pos) {
-        Log.i(TAG, "onListItemClickListener: " + pos);
         // Send the position using the callback to the StepsActivity
         mCallback.onStepSelected(pos, -1);
     }

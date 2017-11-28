@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,11 +91,11 @@ public class StepDetailFragment extends Fragment {
         super.onResume();
           if (mCurrentStep != null) {
               // If there is a video url available, hide ImageView and initialize the player
-              if (mCurrentStep.getVideoUrl() != null && !mCurrentStep.getVideoUrl().isEmpty()) {
+              if (mCurrentStep.getVideoURL() != null && !mCurrentStep.getVideoURL().isEmpty()) {
                   if (mThumbnailImageView != null) mThumbnailImageView.setVisibility(View.GONE);
                   mPlayerView.setVisibility(View.VISIBLE);
                   initializeMediaSession();
-                  initializePlayer(Uri.parse(mCurrentStep.getVideoUrl()));
+                  initializePlayer(Uri.parse(mCurrentStep.getVideoURL()));
               }
               // If there is an image url available, hide the SimpleExoPlayerView and load the image using Glide
               else if (mCurrentStep.getThumbnailURL() != null && !mCurrentStep.getThumbnailURL().isEmpty()

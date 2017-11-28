@@ -3,36 +3,48 @@ package com.example.ricardo.bakingapp.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Ricardo on 9/18/17.
  */
 
 public class Step implements Parcelable {
 
-    private int id;
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("shortDescription")
+    @Expose
     private String shortDescription;
+    @SerializedName("description")
+    @Expose
     private String description;
-    private String videoUrl;
+    @SerializedName("videoURL")
+    @Expose
+    private String videoURL;
+    @SerializedName("thumbnailURL")
+    @Expose
     private String thumbnailURL;
 
-    public Step() {
-
-    }
-
-
-    public Step(int id, String shortDescription, String description, String videoUrl, String thumbnailURL) {
+    public Step(Integer id, String shortDescription, String description, String videoURL, String thumbnailURL) {
         this.id = id;
         this.shortDescription = shortDescription;
         this.description = description;
-        this.videoUrl = videoUrl;
+        this.videoURL = videoURL;
         this.thumbnailURL = thumbnailURL;
     }
 
     protected Step(Parcel in) {
-        id = in.readInt();
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readInt();
+        }
         shortDescription = in.readString();
         description = in.readString();
-        videoUrl = in.readString();
+        videoURL = in.readString();
         thumbnailURL = in.readString();
     }
 
@@ -48,11 +60,11 @@ public class Step implements Parcelable {
         }
     };
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -72,12 +84,12 @@ public class Step implements Parcelable {
         this.description = description;
     }
 
-    public String getVideoUrl() {
-        return videoUrl;
+    public String getVideoURL() {
+        return videoURL;
     }
 
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
+    public void setVideoURL(String videoURL) {
+        this.videoURL = videoURL;
     }
 
     public String getThumbnailURL() {
@@ -95,10 +107,15 @@ public class Step implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
+        if (id == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(id);
+        }
         parcel.writeString(shortDescription);
         parcel.writeString(description);
-        parcel.writeString(videoUrl);
+        parcel.writeString(videoURL);
         parcel.writeString(thumbnailURL);
     }
 }

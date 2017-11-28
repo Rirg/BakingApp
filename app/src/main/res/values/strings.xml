@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">BakingApp</string>
-    <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_no_recipe">No recipe selected</string>
     <string name="ingredient_measure">Measure:</string>
@@ -10,5 +9,7 @@
     <string name="recipe_ingredients">Recipe ingredients</string>
     <string name="widget_configure_indications">Please select a recipe to display the ingredients:</string>
     <string name="error_no_network">Please check your internet connection</string>
+    <string name="step_thumbnail_content_description">Step thumbnail</string>
+    <string name="recipe_image_content_description">Recipe Image</string>
 
 </resources>

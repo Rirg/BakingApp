@@ -38,7 +38,6 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-
         holder.bind(position);
     }
 
@@ -49,8 +48,6 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-
-
         @BindView(R.id.ingredient_name_tv) TextView ingredient;
         @BindView(R.id.ingredient_quantity_tv) TextView quantity;
         @BindView(R.id.ingredient_measure_tv) TextView measure;
@@ -61,17 +58,9 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         }
 
         void bind(int pos) {
-            ingredient.setText(mIngredients.get(pos).getName());
+            ingredient.setText(mIngredients.get(pos).getIngredient());
             measure.setText(mContext.getString(R.string.ingredient_measure) + mIngredients.get(pos).getMeasure());
             quantity.setText(mContext.getString(R.string.ingredient_quantity) + String.valueOf(mIngredients.get(pos).getQuantity()));
-        }
-
-    }
-
-    public void swapList(ArrayList<Ingredient> ingredients) {
-        if (ingredients != null) {
-            mIngredients = ingredients;
-            notifyDataSetChanged();
         }
     }
 }

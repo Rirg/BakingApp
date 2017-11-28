@@ -15,18 +15,22 @@ import android.widget.ListView;
 import android.widget.RemoteViews;
 
 import com.example.ricardo.bakingapp.activities.IngredientsActivity;
-import com.example.ricardo.bakingapp.models.Ingredient;
+import com.example.ricardo.bakingapp.activities.MenuActivity;
 import com.example.ricardo.bakingapp.models.Recipe;
-import com.example.ricardo.bakingapp.models.Step;
-import com.example.ricardo.bakingapp.utils.FetchRecipesData;
+import com.example.ricardo.bakingapp.utils.ApiService;
+import com.example.ricardo.bakingapp.utils.RetroClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class IngredientsWidgetConfigure extends AppCompatActivity implements
-        FetchRecipesData.OnTaskCompleted, AdapterView.OnItemClickListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class IngredientsWidgetConfigure extends AppCompatActivity implements AdapterView.OnItemClickListener, Callback<List<Recipe>> {
 
     private ArrayList<String> mRecipesNames;
-    private ArrayList<Recipe> mRecipes;
+    private List<Recipe> mRecipes;
     private ArrayAdapter<String> mAdapter;
     private int mAppWidgetId;
     private SharedPreferences preferences;
@@ -65,19 +69,28 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
 
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
-        new FetchRecipesData(this, this, FetchRecipesData.RECIPES_CODE, -1).execute();
+
+        if (MenuActivity.isOnline(this)) {
+            // Use retrofit to fetch data
+            ApiService api = RetroClient.getApiService();
+            Call<List<Recipe>> call = api.getAllRecipesData();
+            call.enqueue(this);
+        }
     }
 
     @Override
-    public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients,
-                                ArrayList<Step> steps) {
-        if (recipes != null) {
-            mRecipes = recipes;
-            for (Recipe recipe : recipes) {
+    public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+        if (response.isSuccessful()) {
+            mRecipes = response.body();
+            for (Recipe recipe : mRecipes) {
                 mRecipesNames.add(recipe.getName());
             }
             mAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onFailure(Call<List<Recipe>> call, Throwable t) {
     }
 
     @Override
@@ -126,4 +139,5 @@ public class IngredientsWidgetConfigure extends AppCompatActivity implements
         setResult(RESULT_OK, resultValue);
         finish();
     }
+
 }

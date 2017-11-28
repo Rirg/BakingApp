@@ -45,10 +45,8 @@ public class StepDetailActivity extends AppCompatActivity {
             }
         }
 
-
         // Set the title of the ActionBar to be the short description of the Step
         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -57,7 +55,7 @@ public class StepDetailActivity extends AppCompatActivity {
         Button btnNext = findViewById(R.id.detail_btn_next);
 
         // Set the video in fullscreen when the device is in landscape if there is a video url available
-        if (mSteps.get(mPos).getVideoUrl() != null && !mSteps.get(mPos).getVideoUrl().isEmpty()) {
+        if (mSteps.get(mPos).getVideoURL() != null && !mSteps.get(mPos).getVideoURL().isEmpty()) {
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 getSupportActionBar().hide();
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -65,7 +63,6 @@ public class StepDetailActivity extends AppCompatActivity {
                 btnNext.setVisibility(View.GONE);
             }
         }
-
         // Prevent adding the fragment twice if there is a saved instance state
         if (savedInstanceState == null) {
             // Create a new instance of the StepDetailFragment and set arguments with extras in a bundle
@@ -74,19 +71,15 @@ public class StepDetailActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList("steps", mSteps);
             bundle.putInt("pos", mPos);
-
             detailFragment.setArguments(bundle);
-
             // Add the StepDetailFragment
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.details_container, detailFragment)
                     .commit();
         }
 
-
         // Check that the buttons aren't null to proceed
         if (btnPrev != null && btnNext != null) {
-
             btnPrev.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -94,40 +87,32 @@ public class StepDetailActivity extends AppCompatActivity {
                     if (mPos > 0) {
                         // Decrease the position by 1 every time the user clicks the previous button
                         mPos--;
-
+                        // Replace the previous StepDetailFragment with the new corresponding step
                         StepDetailFragment newDetailFragment = new StepDetailFragment();
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.details_container, newDetailFragment)
                                 .commit();
-
                         // Change the title of the action bar to the current step
                         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());
-
                         // Call the method setCurrentStep() passing the current step
                         newDetailFragment.setCurrentStep(mSteps.get(mPos));
                     }
                 }
             });
-
-
             btnNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     // Check if the position is less than the steps size
                     if (mPos < mSteps.size() - 1) {
-
                         // Increase the position by 1 every time the user clicks the next button
                         mPos++;
-
-                        // Replace the previous StepDetailFragment with the new step
+                        // Replace the previous StepDetailFragment with the new corresponding step
                         StepDetailFragment newDetailFragment = new StepDetailFragment();
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.details_container, newDetailFragment)
                                 .commit();
-
                         // Change the title of the action bar
                         getSupportActionBar().setTitle(mSteps.get(mPos).getShortDescription());
-
                         // Call the method setCurrentStep() passing the current step
                         newDetailFragment.setCurrentStep(mSteps.get(mPos));
                     }

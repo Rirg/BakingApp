@@ -6,12 +6,18 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.example.ricardo.bakingapp.activities.MenuActivity;
 import com.example.ricardo.bakingapp.models.Ingredient;
 import com.example.ricardo.bakingapp.models.Recipe;
-import com.example.ricardo.bakingapp.models.Step;
-import com.example.ricardo.bakingapp.utils.FetchRecipesData;
+import com.example.ricardo.bakingapp.utils.ApiService;
+import com.example.ricardo.bakingapp.utils.RetroClient;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Ricardo on 11/9/17.
@@ -25,9 +31,9 @@ public class ListWidgetService extends RemoteViewsService {
     }
 }
 
-class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, FetchRecipesData.OnTaskCompleted {
+class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, Callback<List<Recipe>> {
     private Context mContext;
-    private ArrayList<String> mIngredients;
+    private List<String> mIngredients;
     private int mAppWidgetId;
     private int mRecipeId;
 
@@ -48,7 +54,12 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
         mIngredients = new ArrayList<>();
-        new FetchRecipesData(mContext, this, FetchRecipesData.INGREDIENTS_CODE, mRecipeId).execute();
+        if (MenuActivity.isOnline(mContext)) {
+            // Use retrofit to fetch data
+            ApiService api = RetroClient.getApiService();
+            Call<List<Recipe>> call = api.getAllRecipesData();
+            call.enqueue(this);
+        }
     }
 
     // Given the position (index) of a WidgetItem in the array, use the item's text value in
@@ -106,19 +117,23 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory, F
     }
 
     @Override
-    public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients,
-                                ArrayList<Step> steps) {
-        // Check if the ArrayList isn't null
-        if (ingredients != null) {
-            // Clear the list before adding new items
+    public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+        if (response.isSuccessful()) {
             mIngredients.clear();
-            // Foreach loop to get all the ingredients names and add them to the list
-            for (Ingredient ingredient : ingredients) {
-                mIngredients.add(ingredient.getName());
+            for (Recipe recipe : response.body()) {
+                if (recipe.getId().equals(mRecipeId)) {
+                    List<Ingredient> ingredients = recipe.getIngredients();
+                    for (Ingredient ingredient : ingredients) {
+                        mIngredients.add(ingredient.getIngredient());
+                    }
+                }
             }
-            // Notify the AppWidget using the AppWidgetManager
-            AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(mAppWidgetId,
-                    R.id.appwidget_listview);
+            AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.appwidget_listview);
         }
+    }
+
+    @Override
+    public void onFailure(Call<List<Recipe>> call, Throwable t) {
+
     }
 }

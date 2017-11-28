@@ -16,17 +16,21 @@ import com.example.ricardo.bakingapp.fragments.StepsListFragment;
 import com.example.ricardo.bakingapp.models.Ingredient;
 import com.example.ricardo.bakingapp.models.Recipe;
 import com.example.ricardo.bakingapp.models.Step;
-import com.example.ricardo.bakingapp.utils.FetchRecipesData;
+import com.example.ricardo.bakingapp.utils.ApiService;
+import com.example.ricardo.bakingapp.utils.RetroClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.Icepick;
 import icepick.State;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class StepsActivity extends AppCompatActivity implements FetchRecipesData.OnTaskCompleted,
-        StepsListFragment.OnStepSelected {
+public class StepsActivity extends AppCompatActivity implements StepsListFragment.OnStepSelected, Callback<List<Recipe>> {
 
     private Recipe mCurrentRecipe;
     @State
@@ -51,6 +55,7 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
 
         getSupportActionBar().setTitle("Steps");
 
+
         if (getIntent().hasExtra("recipe")) {
             // Get the current selected recipe
             mCurrentRecipe = getIntent().getParcelableExtra("recipe");
@@ -65,8 +70,15 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
         // Fetch the steps and ingredients just if we have null list
         if (mSteps == null || mIngredients == null) {
             mProgressBar.setVisibility(View.VISIBLE);
-            new FetchRecipesData(this, this, FetchRecipesData.STEPS_CODE, mCurrentRecipe.getId()).execute();
-            new FetchRecipesData(this, this, FetchRecipesData.INGREDIENTS_CODE, mCurrentRecipe.getId()).execute();
+
+            // Check the internet connection
+            if (MenuActivity.isOnline(this)) {
+                ApiService api = RetroClient.getApiService();
+                Call<List<Recipe>> call = api.getAllRecipesData();
+                call.enqueue(this);
+            } else {
+                mErrorMessage.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -77,58 +89,6 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
             finish();
         }
         return true;
-    }
-
-    @Override
-    public void onTaskCompleted(ArrayList<Recipe> recipes, ArrayList<Ingredient> ingredients, ArrayList<Step> steps) {
-        mProgressBar.setVisibility(View.INVISIBLE);
-        // Variables that we will need
-        Bundle bundle;
-        FragmentManager manager = getSupportFragmentManager();
-
-        if (ingredients != null || steps != null) {
-            mErrorMessage.setVisibility(View.INVISIBLE);
-
-            // Save the ingredients array in the global variable just if it isn't null
-            if (ingredients != null) {
-                mIngredients = ingredients;
-            }
-
-            // Make sure that we don't have a null array to proceed
-            if (steps != null) {
-                mSteps = steps;
-
-                // Create a bundle to save and send all the steps and the id of the current recipe
-                bundle = new Bundle();
-                bundle.putParcelableArrayList("steps", mSteps);
-                bundle.putInt("recipeId", mCurrentRecipe.getId());
-
-                // Add a new instance of the StepsListFragment using the fragment manager
-                // to show the steps list.
-                StepsListFragment fragment = new StepsListFragment();
-                fragment.setArguments(bundle);
-
-                manager.beginTransaction()
-                        .add(R.id.steps_container, fragment)
-                        .commit();
-
-
-                // If it's a tablet, inflate the StepDetailFragment and send all the steps in a bundle
-                if (mTwoPane) {
-                    bundle = new Bundle();
-                    bundle.putParcelableArrayList("steps", mSteps);
-
-                    StepDetailFragment detailFragment = new StepDetailFragment();
-                    detailFragment.setArguments(bundle);
-
-                    manager.beginTransaction()
-                            .add(R.id.details_container, detailFragment)
-                            .commit();
-                }
-            }
-        } else {
-            mErrorMessage.setVisibility(View.VISIBLE);
-        }
     }
 
     // Save the steps and ingredients list in the bundle
@@ -185,5 +145,72 @@ public class StepsActivity extends AppCompatActivity implements FetchRecipesData
                 startActivity(intent);
             }
         }
+    }
+
+    @Override
+    public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+        // Hide the progress bar when the download is completed
+        mProgressBar.setVisibility(View.INVISIBLE);
+
+        if (response.isSuccessful()) {
+            // Hide the error message if the response is successful
+            mErrorMessage.setVisibility(View.INVISIBLE);
+
+            // Create a new steps list and ingredients list to hold the downloaded data
+            mSteps = new ArrayList<>();
+            mIngredients = new ArrayList<>();
+
+            // Loop on all the recipes data and
+            for (Recipe recipe : response.body()) {
+                // Check the corresponding recipe id
+                if (recipe.getId().equals(mCurrentRecipe.getId())) {
+                    // Get the steps list and ingredients list and add them to the global variables
+                    mSteps.addAll(recipe.getSteps());
+                    mIngredients.addAll(recipe.getIngredients());
+                }
+            }
+            FragmentManager manager = getSupportFragmentManager();
+            Bundle bundle;
+
+            if (mSteps != null) {
+
+                // Create a bundle to save and send all the steps and the id of the current recipe
+                bundle = new Bundle();
+                bundle.putParcelableArrayList("steps", mSteps);
+                bundle.putInt("recipeId", mCurrentRecipe.getId());
+
+                // Add a new instance of the StepsListFragment using the fragment manager
+                // to show the steps list.
+                StepsListFragment fragment = new StepsListFragment();
+                fragment.setArguments(bundle);
+
+                manager.beginTransaction()
+                        .add(R.id.steps_container, fragment)
+                        .commit();
+
+
+                // If it's a tablet, inflate the StepDetailFragment and send all the steps in a bundle
+                if (mTwoPane) {
+                    bundle = new Bundle();
+                    bundle.putParcelableArrayList("steps", mSteps);
+
+                    StepDetailFragment detailFragment = new StepDetailFragment();
+                    detailFragment.setArguments(bundle);
+
+                    manager.beginTransaction()
+                            .add(R.id.details_container, detailFragment)
+                            .commit();
+                }
+            }
+
+        } else {
+            mErrorMessage.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onFailure(Call<List<Recipe>> call, Throwable t) {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mErrorMessage.setVisibility(View.VISIBLE);
     }
 }
